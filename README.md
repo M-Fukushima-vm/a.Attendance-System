@@ -1,11 +1,11 @@
-# 勤怠システムB
+# 勤怠システムA
 
 ## 開発環境
 
 * AWS Cloud9
 * Ruby
 * Rails
-* Git(HTTPSからSSH通信へ変更)
+* Git(SSH通信)
  
 【管理権限ユーザー】
   email: "sample@email.com", password: "password"
