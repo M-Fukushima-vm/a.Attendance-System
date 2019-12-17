@@ -3,19 +3,20 @@
   <% if params[:user].present? && params[:user][:name].present? %>
     検索結果
   <% else %>
-    ユーザー一覧
+    ユーザ一覧
   <% end %>
 </h1>
 
-<!--<form class="form-inline text-right">-->
-<!--  <label>ユーザー名検索　　　　　　　　　</label><br>-->
-<!--    <div class="input-group">-->
-<!--	    <input type="text" class="form-control" placeholder="キーワードを入力...">-->
-<!--	    <span class="input-group-btn">-->
-<!--		    <button type="button" class="btn btn-primary">検索</button>-->
-<!--	    </span>-->
-<!--    </div>-->
-<!--</form>-->
+<!--ファイル読み込みフォーム-->
+<div class="input-group input-inline">
+    <label class="input-group-btn">
+        <span class="btn btn-gray">
+            ファイルを選択<input type="file" style="display:none">
+        </span>
+    </label>
+    <input type="text" class="form-control" readonly="">
+</div>
+
 
 <!--<form class="form-inline text-right">-->
 <!--  %= form_tag(users_path, method: "get") do %>-->
