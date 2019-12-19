@@ -20,6 +20,12 @@ class UsersController < ApplicationController
     
   end
   
+  def import
+    # fileはtmpに自動で一時保存される
+    User.import(params[:file])
+    redirect_to users_url
+  end
+  
   def show
     # @worked_sum = @attendances.where.not(started_at: nil).count
     if current_user?(@user) || current_user.admin?

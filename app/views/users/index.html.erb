@@ -17,6 +17,10 @@
     <input type="text" class="form-control" readonly="">
 </div>
 
+<%= form_tag import_users_path, multipart: true do %>
+  <%= file_field_tag :file %>
+  <%= submit_tag "インポート" %>
+<% end %>
 
 <!--<form class="form-inline text-right">-->
 <!--  %= form_tag(users_path, method: "get") do %>-->
