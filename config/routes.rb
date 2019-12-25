@@ -14,9 +14,11 @@ Rails.application.routes.draw do
       patch 'update_basic_info'
       get 'attendances/edit_one_month'
       patch 'attendances/update_one_month'
+      patch 'index_update'
     end
     collection { post :import }
     resources :attendances, only: :update
+    collection { get :work_start_user_index }
   end
   
 end

@@ -1,4 +1,7 @@
 class UsersController < ApplicationController
+  
+  include SessionsHelper
+  
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info] # paramsハッシュからユーザーを取得
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info] # ユーザーにログインを要求
   before_action :correct_user, only: [:edit, :update] # ユーザー自身のみが情報を編集・更新できる
@@ -8,6 +11,7 @@ class UsersController < ApplicationController
   def index
     if current_user.admin?
       @users = query.paginate(page: params[:page])
+      store_location # index_update の redirect先一時保存【paginate対策】
     else
       flash[:danger] = '権限がありません。'
       redirect_to root_url
@@ -20,10 +24,27 @@ class UsersController < ApplicationController
     
   end
   
+  def index_update
+    @user = User.find(params[:id])
+    if @user.update_attributes(user_params_index)
+      flash[:success] = "ユーザー情報を更新しました。"
+      # redirect_to users_url
+      redirect_back_or users_url # index で記憶した redirect先(store_location)か 指定URLへ【paginate対策】
+    else
+      # render :index
+      flash[:danger] = "無効な入力データがあった為、編集をキャンセルしました。"
+      redirect_back_or users_url # index で記憶した redirect先(store_location)か 指定URLへ【paginate対策】
+    end
+  end
+  
   def import
     # fileはtmpに自動で一時保存される
     User.import(params[:file])
     redirect_to users_url
+  end
+  
+  def work_start_user_index
+    @user = User.where(work_start_user)
   end
   
   def show
@@ -92,6 +113,14 @@ class UsersController < ApplicationController
 
     def user_params
       params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
+    end
+    
+    def user_params_index
+      params.require(:user).permit(:name, :email, :affiliation, :employee_number, :uid,:password, :basic_work_time, :designed_work_start_time, :designed_work_end_time)
+    end
+    
+    def work_start_user
+      Date.current == day.worked_on && day.started_at.present? && day.finished_at.nil?
     end
     
     def basic_info_params
