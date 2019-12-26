@@ -44,7 +44,7 @@ class UsersController < ApplicationController
   end
   
   def work_start_user_index
-    @user = User.where(work_start_user)
+    @users = User.all.includes(:attendances)
   end
   
   def show
@@ -120,7 +120,7 @@ class UsersController < ApplicationController
     end
     
     def work_start_user
-      Date.current == day.worked_on && day.started_at.present? && day.finished_at.nil?
+      (Date.current == day.worked_on) && day.started_at.present? && day.finished_at.nil?
     end
     
     def basic_info_params

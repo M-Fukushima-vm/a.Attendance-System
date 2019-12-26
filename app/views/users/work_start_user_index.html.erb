@@ -1,0 +1,47 @@
+<% provide(:title, 'Work_start Users') %>
+<h1>
+  <% if params[:user].present? && params[:user][:name].present? %>
+    検索結果
+  <% else %>
+    出勤中社員一覧
+  <% end %>
+</h1>
+
+<!--ユーザー名検索フォーム-->
+<form class="form-inline text-right" style="display:none">
+  <%= form_with model: User.new do |form| %>
+    <%= form.label :name, 'ユーザー名検索　　　　　　　　　' %><br>
+    <div class="input-group">
+      <%= form.text_field :name, value: (params[:user][:name] if params[:user]), placeholder: "キーワードを入力...", class: "form-control" %>
+      <span class="input-group-btn"><%= form.submit '検索', class: "btn btn-primary" %></span>
+    </div>
+  <% end %>
+</form>
+
+<!--出勤中社員一覧-->
+<div class="col-md-10 col-md-offset-1">
+  <!--%= will_paginate %>-->
+  <table class="table table-condensed table-hover" id="table-users">
+    <thead>
+      <tr></tr>
+      <tr>
+        <th class="center"><%= User.human_attribute_name :employee_number %></th>
+        <th class="center"><%= User.human_attribute_name :name %></th>
+      </tr>
+    </thead>
+
+    <% @users.each do |user| %>
+      <% user.attendances.each do |attendance| %>
+        <% if  (Date.current == attendance.worked_on) && attendance.started_at.present? && attendance.finished_at.nil? %>
+          <tr>
+            <td class="center"><%= user.employee_number %></td>
+            <td class="center">
+              <%= link_to user.name, user %>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+    <% end %>
+  </table>
+  <!--%= will_paginate %>-->
+</div>
