@@ -21,4 +21,10 @@ Rails.application.routes.draw do
     collection { get :work_start_user_index }
   end
   
+  # get '/bases', to: 'bases#index'
+  resources :bases do
+    post 'create'
+    patch 'update'
+  end
+  
 end

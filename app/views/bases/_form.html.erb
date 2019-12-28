@@ -1,0 +1,13 @@
+<%= form_with(scope: :base, url: bases_path, local: true, method: :post) do |f| %>
+
+  <!--%= f.label :number, "拠点番号", class: "label-#{yield(:class_text)}" %>-->
+  <!--%= f.text_field :number, class: "form-control" %>-->
+
+  <%= f.label :name, "拠点名", class: "label-#{yield(:class_text)}" %>
+  <%= f.text_field :name, class: "form-control" %>
+
+  <%= f.label :assortment, "拠点種類", class: "label-#{yield(:class_text)}" %>
+  <%= f.text_field :assortment, class: "form-control" %>
+
+  <%= f.submit "拠点情報追加", class: "btn btn-primary btn-block btn-#{yield(:class_text)}" %>
+<% end %>

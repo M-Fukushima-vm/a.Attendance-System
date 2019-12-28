@@ -1,0 +1,13 @@
+<%= form_with(scope: :base, url: basis_update_path(base.id), local: true, method: :patch) do |f| %>
+
+  <!--%= f.label :number, "拠点番号", class: "label-#{yield(:class_text)}" %>-->
+  <!--%= f.text_field :number, class: "form-control" %>-->
+
+  <%= f.label :name, "拠点名", class: "label-#{yield(:class_text)}" %>
+  <%= f.text_field :name, value: base.name, class: "form-control" %>
+
+  <%= f.label :assortment, "拠点種類", class: "label-#{yield(:class_text)}" %>
+  <%= f.text_field :assortment, value: base.assortment, class: "form-control" %>
+
+  <%= f.submit "拠点情報修正", class: "btn btn-primary btn-block btn-#{yield(:class_text)}" %>
+<% end %>
