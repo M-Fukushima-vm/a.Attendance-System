@@ -3,21 +3,25 @@
   <table class="table table-bordered table-condensed user-table">
     <tr>
       <td>
-        <%= link_to "⇦", user_path(date: @first_day.prev_month), class: "btn btn-primary btn-sm" %>
-        　<%= l(@first_day, format: :middle) %>  勤怠管理表　
-        <%= link_to "⇨", user_path(date: @first_day.next_month), class: "btn btn-primary btn-sm" %>
+        <% if logged_in? && current_user?(@user) %>
+          <%= link_to "⇦", user_path(date: @first_day.prev_month), class: "btn btn-primary btn-sm" %>
+        <% end %>
+        　  <%= l(@first_day, format: :middle) %>  勤怠管理表　
+        <% if logged_in? && current_user?(@user) %>
+          <%= link_to "⇨", user_path(date: @first_day.next_month), class: "btn btn-primary btn-sm" %>
+        <% end %>
       </td>
       <td>
         <!--指定勤務時間：%= format_basic_info(@user.work_time) %><br>-->
-        指定勤務開始時間：<%= format_basic_info(@user.work_time) %><br>
-        指定勤務終了時間：<%= format_basic_info(@user.work_time) %>
+        指定勤務開始時間：<%= format_basic_info(@user.designed_work_start_time) %><br>
+        指定勤務終了時間：<%= format_basic_info(@user.designed_work_end_time) %>
       </td>
-      <td colspan="3">基本時間：<%= format_basic_info(@user.basic_time) %></td>
+      <td colspan="3">基本時間：<%= format_basic_info(@user.basic_work_time) %></td>
       <td>初日：<%= l(@first_day, format: :short) %></td>
     </tr>
 
     <tr>
-      <td>所属：<%= @user.department.present? ? @user.department : "未所属" %></td>
+      <td>所属：<%= @user.affiliation.present? ? @user.affiliation : "未所属" %></td>
       <td>氏名：<%= @user.name %></td>
       <td>コード</td>
       <td></td>
@@ -28,18 +32,20 @@
 </div>
 
 <div class="btn-users-show">
-  <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
-  <%= link_to "CSV出力", "#", class: "btn btn-primary" %><br>
-  <%= link_to "勤怠修正ログ（承認済）", "#", class: "btn btn-primary" %>
+  <% if logged_in? && current_user?(@user) %>
+    <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
+    <%= link_to "CSV出力", "#", class: "btn btn-primary" %><br>
+    <%= link_to "勤怠修正ログ（承認済）", "#", class: "btn btn-primary" %>
+  <% end %>
 </div>
 
 <div>
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
     <thead>
       <tr>
-        <th rowspan="3"><br><br>残業申請</th>
-        <th rowspan="3"><br><br>日付</th>
-        <th rowspan="3"><br><br>曜日</th>
+        <th rowspan="3">残業申請</th>
+        <th rowspan="3">日付</th>
+        <th rowspan="3">曜日</th>
         <td colspan="8">【実績】</td>
         <td colspan="5">所定外勤務</td>
       </tr>
@@ -76,7 +82,11 @@
           end
         %>
         <tr>
-          <td><%= link_to "残業申請", "#", class: "btn btn-primary btn-sm" %></td>
+          <td>
+            <% if logged_in? && current_user?(@user) %>
+              <%= link_to "残業申請", "#", class: "btn btn-primary btn-sm" %>
+            <% end %>
+          </td>
           <!--日付　表示-->
           <td><%= l(day.worked_on, format: :short) %></td>
           <!--曜日　表示-->
@@ -89,7 +99,7 @@
           <td><%= l(day.started_at.floor_to(15.minutes), format: :minute) if day.started_at.present? %></td>
           <!--出社ボタン表示用スペース-->
           <td>
-            <% if Date.current == day.worked_on && day.started_at.nil? %>
+            <% if logged_in? && current_user?(@user) && (Date.current == day.worked_on && day.started_at.nil?) %>
               <%= link_to "　出社　", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-sm btn-attendance" %>
             <!--% if btn_text = attendance_state(day) %>-->
               <!--%= link_to "　#{btn_text}　", user_attendance_path(@user, day), method: :patch, class: "btn btn-gray btn-attendance" %>-->
@@ -101,7 +111,7 @@
           <td><%= l(day.finished_at.floor_to(15.minutes), format: :minute) if day.finished_at.present? %></td>
           <!--退社ボタン表示用スペース-->
           <td>
-            <% if Date.current == day.worked_on && day.started_at.present? && day.finished_at.nil? %>
+            <% if logged_in? && current_user?(@user) && (Date.current == day.worked_on && day.started_at.present? && day.finished_at.nil?) %>
               <%= link_to "　退社　", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-sm btn-attendance" %>
             <!--% if btn_text = attendance_state(day) %>-->
               <!--%= link_to "　#{btn_text}　", user_attendance_path(@user, day), method: :patch, class: "btn btn-gray btn-attendance" %>-->
@@ -154,10 +164,8 @@
           所属長承認 <%= "#" %><br>
           <!--選択欄-->
             <form class="form-inline dropdown-menu-right">
-              <%= form_with model: User.new do |form| %>
-                <div class="input-group">
-                  <%= form.text_field :name, value: (params[:user][:name] if params[:user]), placeholder: "所属長選択", class: "form-control" %>
-                </div>
+              <%= form_for(@user) do |f| %>
+                <%= f.select :name, @superior_user_array, { include_blank: "送信先を選択" } %>
               <% end %>
             </form><br>
           <%= link_to "申請", "#", method: :patch, class: "btn btn-primary btn-sm btn-block" %>

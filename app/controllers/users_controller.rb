@@ -48,13 +48,18 @@ class UsersController < ApplicationController
   end
   
   def show
-    # @worked_sum = @attendances.where.not(started_at: nil).count
     if current_user?(@user) || current_user.admin?
       @worked_sum = @attendances.where.not(started_at: nil).count
     else
       flash[:danger] = '権限がありません。'
       redirect_to root_url
     end
+    
+    @superior_user_array = [] #上長ユーザーの配列作成
+    @superior_user = User.where(superior: true) #上長ユーザー数をカウント
+      if User.where(superior: true).present?
+        @superior_user_array = @superior_user.pluck(:name)
+      end
     
     # "app/controllers/application_controller.rb"の def set_one_month 内に移行
     
