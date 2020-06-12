@@ -5,6 +5,26 @@
   text-align: center;
 }
 
+	/* 申請お知らせ領域 */		
+.apply-notice {		
+  margin-top: -5px;		
+  margin-bottom: 20px;
+  color: #c0c0c0;
+}
+
+.notice {
+  p {
+  color: #ff0000;
+    a {
+      color: #ff0000;
+      padding: 0.05em 0.1em;
+      // margin: 0.3em 0
+      font-weight: bold;
+      border: solid 2px #ff0000;
+    }
+  }
+}
+
 	/* ユーザー情報下ボタン */		
 .btn-users-show {		
   margin-top: -10px;		

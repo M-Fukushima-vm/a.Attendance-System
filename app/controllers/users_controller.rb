@@ -7,6 +7,7 @@ class UsersController < ApplicationController
   before_action :correct_user, only: [:edit, :update] # ユーザー自身のみが情報を編集・更新できる
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info] # システム管理権限所有かどうか判定
   before_action :set_one_month, only: :show
+  before_action :notification_display, only: :show #1ヶ月申請の通知
   
   def index
     if current_user.admin?
@@ -48,18 +49,18 @@ class UsersController < ApplicationController
   end
   
   def show
-    if current_user?(@user) || current_user.admin?
+    if current_user?(@user) || current_user.admin? || current_user.superior?
       @worked_sum = @attendances.where.not(started_at: nil).count
     else
       flash[:danger] = '権限がありません。'
       redirect_to root_url
     end
     
-    @superior_user_array = [] #上長ユーザーの配列作成
-    @superior_user = User.where(superior: true) #上長ユーザー数をカウント
-      if User.where(superior: true).present?
-        @superior_user_array = @superior_user.pluck(:name)
-      end
+    one_month_application_destination_select # ↓↓↓　private ↓↓↓
+    
+    one_month_apply_status # ↓↓↓　private ↓↓↓
+      
+    
     
     # "app/controllers/application_controller.rb"の def set_one_month 内に移行
     
@@ -113,6 +114,19 @@ class UsersController < ApplicationController
     end
     redirect_to users_url
   end
+      
+  def one_month_check
+    # #"申請中：１"かつ申請先がcurrent_user の レコード全て
+    @one_month = Attendance.where(month_approval: 1).where(approval_superior: current_user.id)
+    # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
+    @one_month_sort = @one_month.group(:user_id, :apply_month)
+    @one_month_users = @one_month_sort.group_by{|u| u.user_id}
+    
+    # @one_month = Attendance.where(month_approval: 1, approval_superior: current_user.id).pluck(:user_id).uniq
+    
+    
+  end
+  
   
   private
 
@@ -138,6 +152,52 @@ class UsersController < ApplicationController
         else
           User
         end
+    end
+    
+    def notification_display #1ヶ月申請の通知
+      if Attendance.where(month_approval: 1).present?
+        #"申請中：１"かつ申請先がcurrent_user の レコード全て
+        @one_month = Attendance.where(month_approval: 1).where(approval_superior: current_user.id)
+        #絞り込んだレコード群から「:user_id, :apply_month　の組み合わせ」をカウント
+        @one_month_count = @one_month.pluck(:user_id, :apply_month).uniq.count
+      end
+    end
+    
+    def one_month_application_destination_select #1ヶ月申請先選択
+      @superior_user_array = [] #上長ユーザーの配列作成
+      @superior_user = User.where(superior: true) #
+      @superior_user = @superior_user.reject{|u| u == current_user} #上長のセルフ1ヶ月申請防止
+        if User.where(superior: true).present?
+          @superior_user_array = @superior_user
+        end
+    end
+    
+    def one_month_apply_status
+      if @u.present?
+        @check_user = @u # u はモーダルitemのユーザー
+      else 
+        @check_user = @user
+      end
+      
+      @first_day_status = Attendance.find_by(user_id: @user.id, worked_on: @first_day)
+      @approval_superior = User.find_by(id: @first_day_status.approval_superior) #申請上長抽出
+      
+        if @approval_superior.present? && @first_day_status.month_approval == "承認" # 承認された場合（申請上長が抽出できて）
+          @one_month_apply_status = "#{@approval_superior.name}から#{@first_day_status.month_approval}済"
+        end
+      
+        if @approval_superior.present? && @first_day_status.month_approval == "否認" # 否認された場合（申請上長が抽出できて）
+          @one_month_apply_status = "#{@approval_superior.name}から#{@first_day_status.month_approval}"
+        end
+      
+        if @approval_superior.present? && @first_day_status.month_approval == "申請中" # 申請中の場合（申請上長が抽出できて）
+          @one_month_apply_status = "#{@approval_superior.name}へ#{@first_day_status.month_approval}"
+        end
+      
+      if !@first_day_status.approval_superior.present? || @first_day_status.month_approval == 0 # 未申請の場合
+        @one_month_apply_status = "未申請"
+      end
+      
     end
 
 end

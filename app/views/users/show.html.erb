@@ -30,6 +30,21 @@
     </tr>
   </table>
 </div>
+<div class="apply-notice">
+  <div class="one-month-notice">
+    <% if current_user?(@user) && current_user.superior? && @one_month_count == 0 %>
+      【所属長承認申請のお知らせ】
+    <% end %>
+    <div class="notice">
+      <% if current_user?(@user) && current_user.superior? && @one_month_count > 0 %>
+        <p>【所属長承認申請のお知らせ】
+          <%= link_to " #{@one_month_count}件の通知があります", one_month_check_user_path(@user), remote: true %>
+        </p>
+      <% end %>
+    </div>
+  </div>
+  
+</div>
 
 <div class="btn-users-show">
   <% if logged_in? && current_user?(@user) %>
@@ -161,17 +176,32 @@
         <td colspan="5"></td>
         <!--所属長承認　表示欄-->
         <td rowspan="3",>
-          所属長承認 <%= "#" %><br>
+          <small>所属長承認：<%= @one_month_apply_status %></small><br>
           <!--選択欄-->
-            <form class="form-inline dropdown-menu-right">
-              <%= form_for(@user) do |f| %>
-                <%= f.select :name, @superior_user_array, { include_blank: "送信先を選択" } %>
+          <% if logged_in? && current_user?(@user) %>
+            <%= form_with model:@user, url: month_approval_user_path(@user.id), method: :patch do |f| %>
+              <%= f.collection_select :approval_superior, @superior_user_array, :id, :name, :prompt => "申請上長を選択" %>
+              <% @attendances.where(worked_on: @first_day).each do |day| %>
+                <%= fields_for "attendances[]", day do |af| %>
+                  <%= af.hidden_field :month_approval, value: "申請中" %>
+                  <%= af.hidden_field :apply_month, value: @first_day.month %>
+                <% end %>
               <% end %>
-            </form><br>
-          <%= link_to "申請", "#", method: :patch, class: "btn btn-primary btn-sm btn-block" %>
+              <!--% if @user.id == current_user.id %>-->
+                <%= f.submit "申請", class: "btn btn-primary btn-sm btn-block" %>
+              <!--% end %>-->
+            <% end %>
+          <% end %>
         </td>
       </tr>
     </tfoot>
-
   </table>
 </div>
+<!--%= debug params.inspect %>-->
+<!--%= debug @user.inspect %>-->
+<!--%= debug @first_day.inspect %>-->
+<!--%= debug @first_day_status.inspect %>-->
+<!--%= debug @approval_superior.inspect %>-->
+<!--%= debug @one_month_apply_status.inspect %>-->
+
+<div id="one-month-check" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

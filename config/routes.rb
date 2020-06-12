@@ -12,7 +12,10 @@ Rails.application.routes.draw do
     member do
       get 'edit_basic_info'
       patch 'update_basic_info'
+      get 'one_month_check'
+      patch 'attendances/one_month_reply', as: :one_month_reply
       get 'attendances/edit_one_month'
+      patch 'attendances/month_approval', as: :month_approval
       patch 'attendances/update_one_month'
       patch 'index_update'
     end

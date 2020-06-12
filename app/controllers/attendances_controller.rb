@@ -46,6 +46,36 @@ class AttendancesController < ApplicationController
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。" # 例外が発生した時の処理
     redirect_to attendances_edit_one_month_user_url(date: params[:date])
   end
+  
+  # 1ヶ月申請の申請ステータス・申請先（上長）・申請先のみ上書き更新
+  def month_approval
+    if params[:user][:approval_superior].present?
+      month_approval_params.each do |id, item|
+        attendance = Attendance.find(id)
+        attendance.approval_superior = params[:user][:approval_superior].to_i
+        attendance.update_attributes(item)
+      end
+        flash[:success] = "当月勤怠を申請しました"
+        redirect_to user_url(date: params[:date])
+    else
+      flash[:danger] = "申請上長を選択して下さい" 
+      redirect_to user_url(date: params[:date])
+    end
+  end
+  
+  # 1ヶ月申請の申請ステータスのみ上書き（承認）更新
+  def one_month_reply
+    month_reply_params.each do |id, item|
+      attendance = Attendance.find(id)
+      if item[:must] == 0 #チェックボックスが未チェックの場合
+        next #スキップ
+      else
+        attendance.update_attributes(item)
+      end
+    end
+    flash[:success] = "変更確認チェックボックス☑の変更を送信しました"
+    redirect_to user_url(date: params[:date])
+  end
 
   private
   
@@ -65,6 +95,14 @@ class AttendancesController < ApplicationController
       end  
     end
     
+    # 1ヶ月申請の申請ステータス・申請先（上長）・申請先のみ上書き更新
+    def month_approval_params
+      params.permit(attendances:[:month_approval, :approval_superior, :apply_month])[:attendances]
+    end
     
+    # 1ヶ月申請の申請ステータスのみ上書き更新(:mustはモーダルのチェックボックスのパラメータ)=>attendance.rb
+    def month_reply_params
+      params.permit(attendances:[:month_approval, :must])[:attendances]
+    end
 
 end
