@@ -32,13 +32,25 @@
 </div>
 <div class="apply-notice">
   <div class="one-month-notice">
-    <% if current_user?(@user) && current_user.superior? && @one_month_count == 0 %>
+    <% if current_user?(@user) && current_user.superior? && @one_month.blank? %>
       【所属長承認申請のお知らせ】
     <% end %>
     <div class="notice">
-      <% if current_user?(@user) && current_user.superior? && @one_month_count > 0 %>
+      <% if current_user?(@user) && current_user.superior? && @one_month.present? %>
         <p>【所属長承認申請のお知らせ】
           <%= link_to " #{@one_month_count}件の通知があります", one_month_check_user_path(@user), remote: true %>
+        </p>
+      <% end %>
+    </div>
+  </div>
+  <div class="e-attendance-notice">
+    <% if current_user?(@user) && current_user.superior? && @e_attendance.blank? %>
+      【勤怠変更申請のお知らせ】
+    <% end %>
+    <div class="notice">
+      <% if current_user?(@user) && current_user.superior? && @e_attendance.present? %>
+        <p>【勤怠変更申請のお知らせ】
+          <%= link_to " #{@e_attendance_count}件の通知があります", edit_attendance_check_user_path(@user), remote: true %>
         </p>
       <% end %>
     </div>
@@ -205,3 +217,4 @@
 <!--%= debug @one_month_apply_status.inspect %>-->
 
 <div id="one-month-check" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="edit-attendance-check" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

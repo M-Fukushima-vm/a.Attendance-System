@@ -6,6 +6,7 @@ class AttendancesController < ApplicationController
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
+  # before_action :superior_or_correct_user, only: :edit_one_month
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
   
@@ -30,6 +31,7 @@ class AttendancesController < ApplicationController
   end
 
   def edit_one_month
+    superior_user_array
   end
 
   def update_one_month
@@ -76,6 +78,103 @@ class AttendancesController < ApplicationController
     flash[:success] = "変更確認チェックボックス☑の変更を送信しました"
     redirect_to user_url(date: params[:date])
   end
+  
+  def edit_approval
+    edit_approval_params.each do |id, item|
+      attendance = Attendance.find(id)
+      item["t_started_at(1i)"] = attendance.worked_on.year.to_s
+      item["t_started_at(2i)"] = attendance.worked_on.month.to_s
+      item["t_started_at(3i)"] = attendance.worked_on.day.to_s
+      item["t_finished_at(1i)"] = attendance.worked_on.year.to_s
+      item["t_finished_at(2i)"] = attendance.worked_on.month.to_s
+      item["t_finished_at(3i)"] = attendance.worked_on.day.to_s
+      # debugger
+      if item[:e_approval_superior].present? && item[:next_day] == "true"
+        next_day = attendance.worked_on.day.to_i + 1
+        item["t_finished_at(3i)"] = next_day.to_s
+        attendance.update_attributes(item)
+      elsif item[:e_approval_superior].present? && item[:next_day] == "false"
+        # debugger
+        attendance.update_attributes(item)
+      end
+    end
+    redirect_to user_url(date: params[:date])
+  end
+
+  def edit_attendance_reply
+    edit_attendance_reply_params.each do |id, item|
+      # debugger
+      attendance = Attendance.find(id)
+      if item[:must].to_i == 0 #チェックボックスが未チェックの場合
+        next #スキップ
+      elsif item["edit_approval"] == "申請中" && item[:must].to_i == 1
+        next
+      elsif item["edit_approval"] == "未申請" && item[:must].to_i == 1
+        attendance.edit_approval = 0
+        attendance.t_started_at = ""
+        attendance.t_finished_at = ""
+        attendance.next_day = false
+        attendance.e_approval_superior = ""
+        
+        attendance.update_attributes(item)
+      elsif item["edit_approval"] == "承認" && item[:must].to_i == 1
+        attendance.edit_approval = 2
+        attendance.started_at = attendance.t_started_at
+        attendance.finished_at = attendance.t_finished_at
+        attendance.t_started_at = ""
+        attendance.t_finished_at = ""
+        
+        attendance.update_attributes(item)
+      elsif item["edit_approval"] == "否認" && item[:must].to_i == 1
+        attendance.edit_approval = 3
+        attendance.t_started_at = ""
+        attendance.t_finished_at = ""
+        attendance.next_day = false
+        
+        attendance.update_attributes(item)
+      # else
+      #   attendance.update_attributes(item)
+      end
+    end
+    flash[:success] = "変更確認チェックボックス☑の変更を送信しました"
+    redirect_to user_url(date: params[:date])
+  end
+      
+      
+      # if item[:e_approval_superior].present? && item[:next_day] == 0
+      #   attendance.update_attributes(item)
+      #   flash[:success] = "勤怠編集を申請しました"
+      #   redirect_to user_url(date: params[:date]) and return
+      # elsif item[:e_approval_superior].present? && item[:next_day] == 1
+      #   attendance.t_finished_at = item[t_finished_at(4i)] + 24
+      #   attendance.update_attributes(item)
+      #   flash[:success] = "勤怠編集を申請しました"
+      #   redirect_to user_url(date: params[:date]) and return
+      # else
+      #   flash[:danger] = "申請上長を選択して下さい" 
+      #   redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+      # end
+    # end
+        # flash[:success] = "勤怠編集を申請しました"
+        # redirect_to user_url(date: params[:date]) and return
+    # else
+      # flash[:danger] = "申請上長を選択して下さい" 
+      # redirect_to user_url(date: params[:date]) and return
+    # end
+    
+    # if params[:user][:attendances][:e_approval_superior].present? && params[:user][:attendances][:next_day] == 1
+    #   edit_approval_params.each do |id, item|
+    #     attendance = Attendance.find(id)
+    #     attendance.t_finished_at = params[:user][:t_finished_at] + 24
+    #     attendance.update_attributes(item)
+    #   end
+    #     flash[:success] = "勤怠編集を申請しました"
+    #     redirect_to user_url(date: params[:date]) and return
+    # else
+    #   flash[:danger] = "申請上長を選択して下さい" 
+    #   redirect_to user_url(date: params[:date]) and return
+    # end
+  # end
 
   private
   
@@ -92,8 +191,17 @@ class AttendancesController < ApplicationController
       unless current_user?(@user) || current_user.admin?
         flash[:danger] = "編集権限がありません。"
         redirect_to(root_url)
-      end  
+      end
     end
+    
+    # 上長、または現在ログインしているユーザーを許可します。
+    # def superior_or_correct_user
+    #   @user = User.find(params[:user_id]) if @user.blank?
+    #   unless current_user?(@user) || current_user.superior?
+    #     flash[:danger] = "編集権限がありません。"
+    #     redirect_to(root_url)
+    #   end
+    # end
     
     # 1ヶ月申請の申請ステータス・申請先（上長）・申請先のみ上書き更新
     def month_approval_params
@@ -103,6 +211,14 @@ class AttendancesController < ApplicationController
     # 1ヶ月申請の申請ステータスのみ上書き更新(:mustはモーダルのチェックボックスのパラメータ)=>attendance.rb
     def month_reply_params
       params.permit(attendances:[:month_approval, :must])[:attendances]
+    end
+    
+    def edit_approval_params
+      params.require(:user).permit(attendances:[:t_started_at, :t_finished_at, :next_day, :note, :e_approval_superior, :edit_approval])[:attendances]
+    end
+    
+    def edit_attendance_reply_params
+      params.permit(attendances:[:edit_approval, :must])[:attendances]
     end
 
 end

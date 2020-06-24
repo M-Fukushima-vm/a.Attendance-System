@@ -16,9 +16,10 @@ class Attendance < ApplicationRecord
   # 退社時間登録には、出社時間より遅い時間である必要
   validate :finished_at_is_after_started_at
   
-  #1ヶ月承認モーダル
-  # validates_acceptance_of :must, allow_nil: false, message: "チェックボックスをオン☑にしてください︎"
+  #1ヶ月承認モーダルの変更確認チェックボックス
   validates_acceptance_of :must
+  
+  
   
   def finished_at_is_invalid_without_a_started_at
     errors.add(:started_at, "が未入力です") if started_at.blank? && finished_at.present?
@@ -42,5 +43,8 @@ class Attendance < ApplicationRecord
   
   #1ヶ月の勤怠情報の申請ステータス
   enum month_approval: { "未申請": 0, "申請中": 1, "承認": 2, "否認": 3}
+  
+  #勤怠変更情報の申請ステータス
+  enum edit_approval: { "未申請": 0, "申請中": 1, "承認": 2, "否認": 3}, _prefix: true
   
 end

@@ -34,14 +34,20 @@
 /* ユーザー勤怠情報テーブル */
 
 #table-attendances {
-  th {
-    vertical-align: middle;
+  thead tr th {
+    vertical-align: bottom;
     text-align: center;
+    font-weight: normal;
   }
   td {
     vertical-align: middle;
     text-align: center;
   }
+}
+
+.time-select {
+  display: inline-block;
+  width: auto;
 }
 
 /* 入力フォーム */

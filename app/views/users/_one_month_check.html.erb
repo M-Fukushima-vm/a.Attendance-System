@@ -16,12 +16,14 @@
             <% @u = User.find(id) %>
             <h4 class="text-center">【 <%= @u.name %> からの1ヶ月分勤怠申請】</h4>
             <table class="table table-bordered table-condensed table-hover" id="table-attendances">
-              <tr>
-                <th>月</th>
-                <th>指示者確認㊞</th>
-                <th>変更</th>
-                <th>勤怠を確認する</th>
-              </tr>
+              <thead>
+                <tr>
+                  <th>月</th>
+                  <th>指示者確認㊞</th>
+                  <th>変更</th>
+                  <th>勤怠を確認する</th>
+                </tr>
+              </thead>
               <!--%= debug u.inspect %>-->
               <!--%= debug items.inspect %>-->
               <% items.each do |item| %>

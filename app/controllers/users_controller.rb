@@ -56,7 +56,7 @@ class UsersController < ApplicationController
       redirect_to root_url
     end
     
-    one_month_application_destination_select # ↓↓↓　private ↓↓↓
+    superior_user_array #  application.controller ##↓↓↓　private ↓↓↓
     
     one_month_apply_status # ↓↓↓　private ↓↓↓
       
@@ -127,6 +127,18 @@ class UsersController < ApplicationController
     
   end
   
+  def edit_attendance_check
+    # #"申請中：１"かつ申請先がcurrent_user の レコード全て
+    @e_attendance = Attendance.where(edit_approval: 1).where(e_approval_superior: current_user.id)
+    # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
+    @e_attendance_sort = @e_attendance.group(:user_id, :worked_on)
+    @e_attendance_users = @e_attendance_sort.group_by{|u| u.user_id}
+    
+    # @one_month = Attendance.where(month_approval: 1, approval_superior: current_user.id).pluck(:user_id).uniq
+    
+    
+  end
+  
   
   private
 
@@ -154,23 +166,31 @@ class UsersController < ApplicationController
         end
     end
     
-    def notification_display #1ヶ月申請の通知
+    def notification_display #申請の通知
+      #1ヶ月申請の通知
       if Attendance.where(month_approval: 1).present?
         #"申請中：１"かつ申請先がcurrent_user の レコード全て
         @one_month = Attendance.where(month_approval: 1).where(approval_superior: current_user.id)
         #絞り込んだレコード群から「:user_id, :apply_month　の組み合わせ」をカウント
         @one_month_count = @one_month.pluck(:user_id, :apply_month).uniq.count
       end
+      #勤怠変更申請の通知
+      if Attendance.where(edit_approval: 1).present?
+        #"申請中：１"かつ申請先がcurrent_user の レコード全て
+        @e_attendance = Attendance.where(edit_approval: 1).where(e_approval_superior: current_user.id)
+        #絞り込んだレコード群から「:user_id, :apply_month　の組み合わせ」をカウント
+        @e_attendance_count = @e_attendance.pluck(:user_id, :worked_on).uniq.count
+      end
     end
     
-    def one_month_application_destination_select #1ヶ月申請先選択
-      @superior_user_array = [] #上長ユーザーの配列作成
-      @superior_user = User.where(superior: true) #
-      @superior_user = @superior_user.reject{|u| u == current_user} #上長のセルフ1ヶ月申請防止
-        if User.where(superior: true).present?
-          @superior_user_array = @superior_user
-        end
-    end
+    # def superior_user_array #上長（申請先）選択
+    #   @superior_user_array = [] #上長ユーザーの配列作成
+    #   @superior_user = User.where(superior: true) #
+    #   @superior_user = @superior_user.reject{|u| u == current_user} #上長のセルフ1ヶ月申請防止
+    #     if User.where(superior: true).present?
+    #       @superior_user_array = @superior_user
+    #     end
+    # end
     
     def one_month_apply_status
       if @u.present?
