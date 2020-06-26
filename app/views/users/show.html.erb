@@ -55,6 +55,18 @@
       <% end %>
     </div>
   </div>
+  <div class="o-attendance-notice">
+    <% if current_user?(@user) && current_user.superior? && @o_attendance.blank? %>
+      【残業申請のお知らせ】
+    <% end %>
+    <div class="notice">
+      <% if current_user?(@user) && current_user.superior? && @o_attendance.present? %>
+        <p>【残業変更申請のお知らせ】
+          <%= link_to " #{@o_attendance_count}件の通知があります", overtime_attendance_check_user_path(@user), remote: true %>
+        </p>
+      <% end %>
+    </div>
+  </div>
   
 </div>
 
@@ -111,7 +123,7 @@
         <tr>
           <td>
             <% if logged_in? && current_user?(@user) %>
-              <%= link_to "残業申請", "#", class: "btn btn-primary btn-sm" %>
+              <%= link_to "残業申請", attendances_overtime_apply_user_path(id: current_user.id, date: day.worked_on), remote: true, class: "btn btn-primary btn-sm" %>
             <% end %>
           </td>
           <!--日付　表示-->
@@ -162,7 +174,15 @@
           <!--業務処理内容　表示-->
           <td>"#"</td>
           <!--支持者確認㊞　表示-->
-          <td>"#"</td>
+          <td>
+            <% if day.edit_approval == "承認" %>
+              勤怠編集承認済
+            <% elsif day.edit_approval == "否認" %>
+              勤怠編集否認
+            <% elsif day.edit_approval == "申請中" %>
+              申請中
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </tbody>
@@ -218,3 +238,5 @@
 
 <div id="one-month-check" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-attendance-check" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="overtime-apply" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="overtime-attendance-check" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

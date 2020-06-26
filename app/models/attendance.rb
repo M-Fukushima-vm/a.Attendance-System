@@ -44,7 +44,10 @@ class Attendance < ApplicationRecord
   #1ヶ月の勤怠情報の申請ステータス
   enum month_approval: { "未申請": 0, "申請中": 1, "承認": 2, "否認": 3}
   
-  #勤怠変更情報の申請ステータス
+  #勤怠変更申請の申請ステータス
   enum edit_approval: { "未申請": 0, "申請中": 1, "承認": 2, "否認": 3}, _prefix: true
+  
+  #残業申請の申請ステータス
+  enum overtime_approval: { "未申請": 0, "申請中": 1, "承認": 2, "否認": 3}, _prefix: true
   
 end

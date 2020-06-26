@@ -1,5 +1,7 @@
 <% provide(:title, @user.name) %>
-<!--%= debug @attendances[0].inspect %>-->
+<%= debug @attendances[0].inspect %>
+<%= debug @attendances[1].inspect %>
+<%= debug @attendances[2].inspect %>
 <!--%= form_with(model: @user, url: edit_approval_user_path(current_user.id), local: true, method: :patch) do |f| %>-->
 <%= form_with(model: @user, url: edit_approval_user_path(current_user.id), method: :patch) do |f| %>
   <div>
@@ -51,7 +53,9 @@
               <td>
                 <%= attendance.collection_select :e_approval_superior, @superior_user_array, :id, :name, :prompt => "申請上長を選択" %>
               </td>
-              <%= attendance.hidden_field :edit_approval, value: "申請中" %>
+              <% if day.e_approval_superior.blank? %>
+                <%= attendance.hidden_field :edit_approval, value: "申請中" %>
+              <% end %>
             </tr>
           <% end %>
         <% end %>

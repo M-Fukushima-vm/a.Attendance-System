@@ -7,7 +7,7 @@ class UsersController < ApplicationController
   before_action :correct_user, only: [:edit, :update] # ユーザー自身のみが情報を編集・更新できる
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info] # システム管理権限所有かどうか判定
   before_action :set_one_month, only: :show
-  before_action :notification_display, only: :show #1ヶ月申請の通知
+  before_action :notification_display, only: :show # お知らせの通知
   
   def index
     if current_user.admin?
@@ -121,10 +121,6 @@ class UsersController < ApplicationController
     # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
     @one_month_sort = @one_month.group(:user_id, :apply_month)
     @one_month_users = @one_month_sort.group_by{|u| u.user_id}
-    
-    # @one_month = Attendance.where(month_approval: 1, approval_superior: current_user.id).pluck(:user_id).uniq
-    
-    
   end
   
   def edit_attendance_check
@@ -133,10 +129,14 @@ class UsersController < ApplicationController
     # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
     @e_attendance_sort = @e_attendance.group(:user_id, :worked_on)
     @e_attendance_users = @e_attendance_sort.group_by{|u| u.user_id}
-    
-    # @one_month = Attendance.where(month_approval: 1, approval_superior: current_user.id).pluck(:user_id).uniq
-    
-    
+  end
+  
+  def overtime_attendance_check
+    # #"申請中：１"かつ申請先がcurrent_user の レコード全て
+    @o_attendance = Attendance.where(overtime_approval: 1).where(o_approval_superior: current_user.id)
+    # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
+    @o_attendance_sort = @o_attendance.group(:user_id, :worked_on)
+    @o_attendance_users = @o_attendance_sort.group_by{|u| u.user_id}
   end
   
   
@@ -180,6 +180,13 @@ class UsersController < ApplicationController
         @e_attendance = Attendance.where(edit_approval: 1).where(e_approval_superior: current_user.id)
         #絞り込んだレコード群から「:user_id, :apply_month　の組み合わせ」をカウント
         @e_attendance_count = @e_attendance.pluck(:user_id, :worked_on).uniq.count
+      end
+      #残業申請の通知
+      if Attendance.where(overtime_approval: 1).present?
+        #"申請中：１"かつ申請先がcurrent_user の レコード全て
+        @o_attendance = Attendance.where(overtime_approval: 1).where(o_approval_superior: current_user.id)
+        #絞り込んだレコード群から「:user_id, :apply_month　の組み合わせ」をカウント
+        @o_attendance_count = @o_attendance.pluck(:user_id, :worked_on).uniq.count
       end
     end
     

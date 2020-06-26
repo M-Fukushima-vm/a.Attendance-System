@@ -19,6 +19,10 @@ Rails.application.routes.draw do
       patch 'attendances/edit_approval', as: :edit_approval # 勤怠変更申請の申請時間・申請ステータス・申請先（上長）のみ上書き更新
       get 'edit_attendance_check' # 上長お知らせ欄からの確認モーダルリンク
       patch 'attendances/edit_attendance_reply', as: :edit_attendance_reply # 1ヶ月申請の申請ステータスのみ上書き（承認）更新
+      get 'attendances/overtime_apply' # 残業申請モーダルリンク
+      patch 'attendances/overtime_approval', as: :overtime_approval # 残業申請の申請時間・申請ステータス・申請先（上長）のみ上書き更新
+      get 'overtime_attendance_check' # 上長お知らせ欄からの確認モーダルリンク
+      patch 'attendances/overtime_attendance_reply', as: :overtime_attendance_reply # 残業申請の申請ステータスのみ上書き（承認）更新
       
       # patch 'attendances/update_one_month'
       patch 'index_update'

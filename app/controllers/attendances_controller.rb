@@ -110,7 +110,7 @@ class AttendancesController < ApplicationController
       elsif item["edit_approval"] == "申請中" && item[:must].to_i == 1
         next
       elsif item["edit_approval"] == "未申請" && item[:must].to_i == 1
-        attendance.edit_approval = 0
+        attendance.edit_approval = "未申請"
         attendance.t_started_at = ""
         attendance.t_finished_at = ""
         attendance.next_day = false
@@ -118,22 +118,66 @@ class AttendancesController < ApplicationController
         
         attendance.update_attributes(item)
       elsif item["edit_approval"] == "承認" && item[:must].to_i == 1
-        attendance.edit_approval = 2
+        attendance.edit_approval = "承認"
         attendance.started_at = attendance.t_started_at
         attendance.finished_at = attendance.t_finished_at
         attendance.t_started_at = ""
         attendance.t_finished_at = ""
+        attendance.next_day = false
+        attendance.e_approval_superior = ""
         
         attendance.update_attributes(item)
       elsif item["edit_approval"] == "否認" && item[:must].to_i == 1
-        attendance.edit_approval = 3
+        attendance.edit_approval = "否認"
         attendance.t_started_at = ""
         attendance.t_finished_at = ""
         attendance.next_day = false
+        attendance.e_approval_superior = ""
         
         attendance.update_attributes(item)
       # else
       #   attendance.update_attributes(item)
+      end
+    end
+    flash[:success] = "変更確認チェックボックス☑の変更を送信しました"
+    redirect_to user_url(date: params[:date])
+  end
+  
+  def overtime_apply
+    superior_user_array
+    @attendance = Attendance.find_by(user_id: params[:id], worked_on: params[:date])
+  end
+  
+  def overtime_approval
+    item = overtime_approval_params
+    attendance = Attendance.find(item[:id])
+    item["overtime(1i)"] = attendance.worked_on.year.to_s
+    item["overtime(2i)"] = attendance.worked_on.month.to_s
+    item["overtime(3i)"] = attendance.worked_on.day.to_s
+    if item[:o_approval_superior].present? && item[:next_day] == "true"
+      next_day = attendance.worked_on.day.to_i + 1
+      item["overtime(3i)"] = next_day.to_s
+      attendance.update_attributes(item)
+      flash[:success] = "残業申請を送信しました"
+      redirect_to user_url(current_user.id)
+    elsif item[:o_approval_superior].present? && item[:next_day] == "false"
+      attendance.update_attributes(item)
+      flash[:success] = "残業申請を送信しました"
+      redirect_to user_url(current_user.id)
+    else
+      redirect_to user_url(current_user.id)
+    end
+  end
+  
+  # 残業申請の申請ステータスのみ上書き（承認）更新
+  def overtime_attendance_reply
+    # debugger
+    overtime_attendance_reply_params.each do |id, item|
+      attendance = Attendance.find(id)
+      if item[:must] == 0 #チェックボックスが未チェックの場合
+        next #スキップ
+      else
+        attendance.update_attributes(item)
       end
     end
     flash[:success] = "変更確認チェックボックス☑の変更を送信しました"
@@ -219,6 +263,14 @@ class AttendancesController < ApplicationController
     
     def edit_attendance_reply_params
       params.permit(attendances:[:edit_approval, :must])[:attendances]
+    end
+    
+    def overtime_approval_params
+      params.permit(attendance:[:id, :overtime, :next_day, :gyoumu_syori, :o_approval_superior, :overtime_approval])[:attendance]
+    end
+    
+    def overtime_attendance_reply_params
+      params.permit(attendances:[:overtime_approval, :must])[:attendances]
     end
 
 end
