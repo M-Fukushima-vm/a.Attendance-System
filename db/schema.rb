@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 20200625020748) do
     t.integer "overtime_approval", default: 0, null: false
     t.integer "o_approval_superior"
     t.string "gyoumu_syori"
+    t.datetime "sonohi_teiji"
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
@@ -52,14 +53,14 @@ ActiveRecord::Schema.define(version: 20200625020748) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2020-06-24 23:00:00"
-    t.datetime "work_time", default: "2020-06-24 22:30:00"
+    t.datetime "basic_time", default: "2020-06-26 23:00:00"
+    t.datetime "work_time", default: "2020-06-26 22:30:00"
     t.string "affiliation"
     t.integer "employee_number"
     t.integer "uid"
-    t.datetime "basic_work_time", default: "2020-06-24 23:00:00"
-    t.datetime "designed_work_start_time", default: "2020-06-25 00:00:00"
-    t.datetime "designed_work_end_time", default: "2020-06-25 09:00:00"
+    t.datetime "basic_work_time", default: "2020-06-26 23:00:00"
+    t.datetime "designed_work_start_time", default: "2020-06-27 00:00:00"
+    t.datetime "designed_work_end_time", default: "2020-06-27 09:00:00"
     t.boolean "superior", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end

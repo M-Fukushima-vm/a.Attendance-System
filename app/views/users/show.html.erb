@@ -166,21 +166,31 @@
           <!--備考　表示-->
           <td><%= day.note %></td>
           <!--終了予定時間：時のみの表示-->
-          <td>"#"</td>
+          <td><%= day.overtime.hour if day.overtime.present? %></td>
           <!--終了予定時間：分のみの表示-->
-          <td>"#"</td>
+          <td><%= day.overtime.min if day.overtime.present? %></td>
           <!--時間外時間　表示-->
-          <td>"#"</td>
+          <td>
+            <% zangyou = day.overtime.to_i - day.sonohi_teiji.to_i %>
+            <%= Time.at(zangyou).strftime('%-H：%M') if day.sonohi_teiji.present? %>
+          </td>
           <!--業務処理内容　表示-->
-          <td>"#"</td>
+          <td><%= day.gyoumu_syori if day.gyoumu_syori.present? %></td>
           <!--支持者確認㊞　表示-->
           <td>
+            <% if day.overtime_approval == "承認" %>
+              残業承認済 
+            <% elsif day.overtime_approval == "否認" %>
+              残業否認 
+            <% elsif day.overtime_approval == "申請中" %>
+              残業申請中
+            <% end %>
             <% if day.edit_approval == "承認" %>
               勤怠編集承認済
             <% elsif day.edit_approval == "否認" %>
               勤怠編集否認
             <% elsif day.edit_approval == "申請中" %>
-              申請中
+              編集申請中
             <% end %>
           </td>
         </tr>

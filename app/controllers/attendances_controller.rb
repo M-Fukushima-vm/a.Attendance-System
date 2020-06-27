@@ -154,6 +154,16 @@ class AttendancesController < ApplicationController
     item["overtime(1i)"] = attendance.worked_on.year.to_s
     item["overtime(2i)"] = attendance.worked_on.month.to_s
     item["overtime(3i)"] = attendance.worked_on.day.to_s
+    # debugger
+    if attendance.sonohi_teiji.blank?
+      apply_user = User.find(attendance.user_id)
+      item["sonohi_teiji(1i)"] = attendance.worked_on.year.to_s
+      item["sonohi_teiji(2i)"] = attendance.worked_on.month.to_s
+      item["sonohi_teiji(3i)"] = attendance.worked_on.day.to_s
+      item["sonohi_teiji(4i)"] = apply_user.designed_work_end_time.hour.to_s
+      item["sonohi_teiji(5i)"] = apply_user.designed_work_end_time.min.to_s
+    end
+    # debugger
     if item[:o_approval_superior].present? && item[:next_day] == "true"
       next_day = attendance.worked_on.day.to_i + 1
       item["overtime(3i)"] = next_day.to_s
@@ -177,6 +187,8 @@ class AttendancesController < ApplicationController
       if item[:must] == 0 #チェックボックスが未チェックの場合
         next #スキップ
       else
+        attendance.next_day = false
+        attendance.o_approval_superior = ""
         attendance.update_attributes(item)
       end
     end
@@ -266,7 +278,7 @@ class AttendancesController < ApplicationController
     end
     
     def overtime_approval_params
-      params.permit(attendance:[:id, :overtime, :next_day, :gyoumu_syori, :o_approval_superior, :overtime_approval])[:attendance]
+      params.permit(attendance:[:id, :overtime, :next_day, :gyoumu_syori, :o_approval_superior, :overtime_approval, :sonohi_teiji])[:attendance]
     end
     
     def overtime_attendance_reply_params

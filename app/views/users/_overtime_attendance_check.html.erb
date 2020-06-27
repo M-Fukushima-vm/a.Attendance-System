@@ -11,7 +11,7 @@
         <%= form_with model:@user, url: overtime_attendance_reply_user_path(current_user.id), method: :patch do |f| %>
           <% @o_attendance_users.each do |id, items| %>
             <% @u = User.find(id) %>
-            <%= debug params.inspect %>
+            <!--%= debug params.inspect %>-->
             <h4 class="text-center">【 <%= @u.name %> からの残業申請】</h4>
             <table class="table table-bordered table-condensed table-hover" id="table-attendances">
               <thead>
@@ -51,10 +51,12 @@
                   <%= l(item[:overtime], format: :time) if item[:overtime].present? %>
                 </td>
                 <td>
-                  <%= l(@u.designed_work_end_time, format: :time) %>
+                  <!--%= l(@u.designed_work_end_time, format: :time) %>-->
+                  <%= l(item[:sonohi_teiji], format: :time) if item[:sonohi_teiji].present? %>
                 </td>
                 <td>
-                  <!--%= format_basic_info(item[:overtime] - @u.designed_work_end_time) if item[:overtime].present? %>-->
+                  <% zangyou = item[:overtime] - item[:sonohi_teiji] %>
+                  <%= Time.at(zangyou).strftime('%-H：%M') if item[:sonohi_teiji].present? %>
                 </td>
                 <td>
                   <%= item[:gyoumu_syori] if item[:gyoumu_syori].present? %>

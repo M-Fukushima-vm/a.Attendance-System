@@ -53,13 +53,16 @@
                   </td>
                   <td>
                     <%= f.text_field :gyoumu_syori, class: "form-control" %>
-                    </td>
+                  </td>
                   <td>
                     <%= f.collection_select :o_approval_superior, @superior_user_array, :id, :name, :prompt => "申請上長を選択" %>
                   </td>
                   <% if @attendance.o_approval_superior.blank? %>
                     <%= f.hidden_field :overtime_approval, value: "申請中" %>
                   <% end %>
+                  <!--% if @attendance.sonohi_teiji.blank? %>-->
+                    <!--% f.datetime_select :sonohi_teiji, {selected: @attendance.updated_at, include_blank: true, discard_year: true, discard_month: true, discard_day: true}, {class: "form-control time-select"} %>-->
+                  <!--% end %>-->
                   <!--<td>-->
                     <!--%= link_to "確認", user_path(id: af.object.user_id, date: af.object.worked_on), { target: "_new", class: "btn btn-primary btn-sm"} %>-->
                   <!--</td>-->
