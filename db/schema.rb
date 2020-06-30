@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200625020748) do
+ActiveRecord::Schema.define(version: 20200628104913) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -44,6 +44,22 @@ ActiveRecord::Schema.define(version: 20200625020748) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "logs", force: :cascade do |t|
+    t.date "hiduke"
+    t.datetime "b_started_at"
+    t.datetime "b_finished_at"
+    t.datetime "started_at"
+    t.datetime "finished_at"
+    t.date "syouninbi"
+    t.integer "jyoucyou"
+    t.integer "attendance_id"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["attendance_id"], name: "index_logs_on_attendance_id"
+    t.index ["user_id"], name: "index_logs_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "email"
@@ -53,14 +69,14 @@ ActiveRecord::Schema.define(version: 20200625020748) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2020-06-26 23:00:00"
-    t.datetime "work_time", default: "2020-06-26 22:30:00"
+    t.datetime "basic_time", default: "2020-06-28 23:00:00"
+    t.datetime "work_time", default: "2020-06-28 22:30:00"
     t.string "affiliation"
     t.integer "employee_number"
     t.integer "uid"
-    t.datetime "basic_work_time", default: "2020-06-26 23:00:00"
-    t.datetime "designed_work_start_time", default: "2020-06-27 00:00:00"
-    t.datetime "designed_work_end_time", default: "2020-06-27 09:00:00"
+    t.datetime "basic_work_time", default: "2020-06-28 23:00:00"
+    t.datetime "designed_work_start_time", default: "2020-06-29 00:00:00"
+    t.datetime "designed_work_end_time", default: "2020-06-29 09:00:00"
     t.boolean "superior", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end

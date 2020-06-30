@@ -63,5 +63,33 @@ class ApplicationController < ActionController::Base
           @superior_user_array = @superior_user
         end
   end
+  
+  # ページ出力前に1ヶ月分のログレコードの存在を確認・セットします。
+  def set_one_month_log 
+    @first_day = params[:date].nil? ?
+    Date.current.beginning_of_month : params[:date].to_date
+    @last_day = @first_day.end_of_month
+    l_one_month = [*@first_day..@last_day] # 対象の月の日数を代入します。
+    
+    # (before_actionの :set_user, :set_one_month で取得可能な)
+    # ユーザー勤怠に紐付く一ヶ月分のログレコードを検索し取得します。
+    @one_month_logs = Log.where(user_id: params[:id], hiduke: @first_day..@last_day).order(:hiduke)
+
+    unless l_one_month.count <= @one_month_logs.count # それぞれの件数（日数）が一致するか評価します。
+      # （対象月の日数以上のログレコード数）でない場合
+      ActiveRecord::Base.transaction do # トランザクションを開始します。
+      
+        # 繰り返し処理により、1ヶ月分のログレコードを生成します。
+        @attendances.each { |a| Log.create!(attendance_id: a.id, user_id: a.user_id, hiduke: a.worked_on) }
+      end
+      # @one_month_logs = Log.where(hiduke: @first_day..@last_day).order(:hiduke)
+      @one_month_logs = Log.where(user_id: params[:id], hiduke: @first_day..@last_day).order(:hiduke)
+    end
+
+  rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
+    flash[:danger] = "ページ情報の取得に失敗しました、再アクセスしてください。"
+    redirect_to user_url(current_user.id)
+
+  end
 
 end

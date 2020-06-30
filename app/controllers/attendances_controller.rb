@@ -105,6 +105,9 @@ class AttendancesController < ApplicationController
     edit_attendance_reply_params.each do |id, item|
       # debugger
       attendance = Attendance.find(id)
+      # debugger
+      a_log = Log.find_by(attendance_id: attendance.id, hiduke: attendance.worked_on)
+      # debugger
       if item[:must].to_i == 0 #チェックボックスが未チェックの場合
         next #スキップ
       elsif item["edit_approval"] == "申請中" && item[:must].to_i == 1
@@ -118,15 +121,35 @@ class AttendancesController < ApplicationController
         
         attendance.update_attributes(item)
       elsif item["edit_approval"] == "承認" && item[:must].to_i == 1
+        c_log = {}
+        c_log["attendance_id"] = a_log.attendance_id.to_s
+        c_log["user_id"] = a_log.user_id.to_s
+        c_log["hiduke"] = a_log.hiduke.to_s
+        
+        c_log["b_started_at"] = attendance.started_at.to_s
+        c_log["b_finished_at"] = attendance.finished_at.to_s
+        
         attendance.edit_approval = "承認"
         attendance.started_at = attendance.t_started_at
         attendance.finished_at = attendance.t_finished_at
+        
+        c_log["started_at"] = attendance.started_at.to_s
+        c_log["finished_at"] = attendance.finished_at.to_s
+        c_log["jyoucyou"] = attendance.e_approval_superior.to_s
+        
         attendance.t_started_at = ""
         attendance.t_finished_at = ""
         attendance.next_day = false
         attendance.e_approval_superior = ""
         
         attendance.update_attributes(item)
+        
+        c_log["syouninbi"] = attendance.updated_at.to_s
+        c_log["id"] = ""
+        # debugger
+        
+        Log.create!(c_log) if c_log["syouninbi"].present?
+        
       elsif item["edit_approval"] == "否認" && item[:must].to_i == 1
         attendance.edit_approval = "否認"
         attendance.t_started_at = ""
@@ -274,7 +297,7 @@ class AttendancesController < ApplicationController
     end
     
     def edit_attendance_reply_params
-      params.permit(attendances:[:edit_approval, :must])[:attendances]
+      params.permit(attendances:[:worked_on, :edit_approval, :must])[:attendances]
     end
     
     def overtime_approval_params

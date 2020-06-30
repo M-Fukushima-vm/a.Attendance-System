@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  # get 'logs/index'
+
   root 'static_pages#top'
   get '/signup', to: 'users#new'
   
@@ -23,6 +25,8 @@ Rails.application.routes.draw do
       patch 'attendances/overtime_approval', as: :overtime_approval # 残業申請の申請時間・申請ステータス・申請先（上長）のみ上書き更新
       get 'overtime_attendance_check' # 上長お知らせ欄からの確認モーダルリンク
       patch 'attendances/overtime_attendance_reply', as: :overtime_attendance_reply # 残業申請の申請ステータスのみ上書き（承認）更新
+      
+      get 'logs/index'
       
       # patch 'attendances/update_one_month'
       patch 'index_update'
