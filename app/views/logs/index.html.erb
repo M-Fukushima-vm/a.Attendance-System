@@ -1,4 +1,81 @@
+<% provide(:title, @user.name) %>
 <h3>勤怠ログ</h3>
-<%= debug @attendances.first.inspect %>
-<%= debug @one_month_logs.inspect %>
-<p>Find me in app/views/logs/index.html.erb</p>
+<!--%= debug @attendances.first.inspect if @attendances.present? %>-->
+<!--%= debug params.inspect if params.present? %>-->
+<!--%= debug @one_month_logs.inspect if @one_month_logs.present? %>-->
+<!--%= debug logs_index_user_path.inspect if logs_index_user_path.present? %>-->
+<!--%= javascript_include_tag 'application' %>-->
+
+
+<%= form_with(model: @user, url: logs_index_user_path(id: current_user.id, date: @first_day), method: :get, id: "chenge-month") do |f| %>
+
+  <%= link_to "リセット", logs_index_user_path(id: current_user.id,
+  date: Date.current.beginning_of_month), class: "btn btn-default" %>
+
+  <br>
+
+  <div id="wrapper">
+    <!--%= f.date_select '', {prompt: true, discard_day: true, use_month_numbers: true},-->
+    <!--{class: "form-control log-month", id: "log-month"}  %>-->
+    <%= f.date_select '', {discard_month: true, prompt: true, discard_day: true, use_month_numbers: true },
+    {class: "form-control log-year", id: "log-year"}  %>
+    <%= f.date_select '', {discard_year: true, prompt: true, discard_day: true, use_month_numbers: true },
+    {class: "form-control log-month", id: "log-month"}  %>
+  </div>
+
+  <!--% link_to "月変更", logs_index_user_path(id: current_user.id,-->
+  <!--date: @first_day),method: :get, id: "chenge-month", class: "btn btn-default" %>-->
+
+<!--%= form_with(model: @user, url: logs_index_user_path(id: current_user.id, date: @first_day), method: :get, id: "chenge-month") do |f| %>-->
+  <!--%= f.date_select 'date-normal', '', {use_month_numbers: true} %>-->
+<% end %>
+  <div>
+    <table class="table table-bordered table-condensed table-hover" id="table-attendances">
+      <thead>
+        <tr>
+          <th>日付</th>
+          <th>変更前出社時間</th>
+          <th>変更前退社時間</th>
+          <th>変更後出社</th>
+          <th>変更後退社</th>
+          <th>指示者</th>
+          <th>承認日</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @one_month_logs.each do |day| %>
+          <% @u = User.find(day.jyoucyou) %>
+            <tr>
+              <td>
+                <!--%= l(day.hiduke, format: :short) %>-->
+                <%= day.hiduke.to_date.strftime('%Y-%-m-%d') if day.hiduke.present? %>
+              </td>
+              <td>
+                <%= day.b_started_at.to_time.strftime('%-H：%M') if day.b_started_at.present? %>
+              </td>
+              <td>
+                <%= day.b_finished_at.to_time.strftime('%-H：%M') if day.b_finished_at.present? %>
+              </td>
+              <td>
+                <%= day.started_at.to_time.strftime('%-H：%M') if day.started_at.present? %>
+              </td>
+              <td>
+                <%= day.finished_at.to_time.strftime('%-H：%M') if day.finished_at.present? %>
+              </td>
+              <td>
+                <%= @u.name %>
+              </td>
+              <td>
+                <%= day.syouninbi.to_date.strftime('%Y-%-m-%d') if day.syouninbi.present? %>
+              </td>
+            </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <!--<div class="center">-->
+  <!--  %= link_to "　　　キャンセル　　　", user_path(date: @first_day), class: "btn btn-default" %>-->
+  <!--  %= f.submit "　　　編集を保存する　　　", class: "btn btn-primary" %>-->
+  <!--</div>-->
+<!--% end %>-->

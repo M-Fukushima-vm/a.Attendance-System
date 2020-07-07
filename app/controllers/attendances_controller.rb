@@ -106,7 +106,7 @@ class AttendancesController < ApplicationController
       # debugger
       attendance = Attendance.find(id)
       # debugger
-      a_log = Log.find_by(attendance_id: attendance.id, hiduke: attendance.worked_on)
+      # a_log = Log.find_by(attendance_id: attendance.id, hiduke: attendance.worked_on)
       # debugger
       if item[:must].to_i == 0 #チェックボックスが未チェックの場合
         next #スキップ
@@ -122,9 +122,13 @@ class AttendancesController < ApplicationController
         attendance.update_attributes(item)
       elsif item["edit_approval"] == "承認" && item[:must].to_i == 1
         c_log = {}
-        c_log["attendance_id"] = a_log.attendance_id.to_s
-        c_log["user_id"] = a_log.user_id.to_s
-        c_log["hiduke"] = a_log.hiduke.to_s
+        # c_log["attendance_id"] = a_log.attendance_id.to_s
+        # c_log["user_id"] = a_log.user_id.to_s
+        c_log["attendance_id"] = attendance.id.to_s
+        c_log["user_id"] = attendance.user_id.to_s
+        
+        # c_log["hiduke"] = a_log.hiduke.to_s
+        c_log["hiduke"] = attendance.worked_on.to_s
         
         c_log["b_started_at"] = attendance.started_at.to_s
         c_log["b_finished_at"] = attendance.finished_at.to_s
@@ -145,7 +149,7 @@ class AttendancesController < ApplicationController
         attendance.update_attributes(item)
         
         c_log["syouninbi"] = attendance.updated_at.to_s
-        c_log["id"] = ""
+        # c_log["id"] = ""
         # debugger
         
         Log.create!(c_log) if c_log["syouninbi"].present?

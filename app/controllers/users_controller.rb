@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info] # システム管理権限所有かどうか判定
   before_action :set_one_month, only: :show
   before_action :notification_display, only: :show # お知らせの通知
-  before_action :set_one_month_log, only: :show
+  # before_action :set_one_month_log, only: :show
   
   def index
     if current_user.admin?
