@@ -1,7 +1,7 @@
 <% provide(:title, @user.name) %>
 <%= debug @attendances[0].inspect %>
-<%= debug @attendances[1].inspect %>
-<%= debug @attendances[2].inspect %>
+<!--%= debug @attendances[1].inspect %>-->
+<!--%= debug @attendances[2].inspect %>-->
 <!--%= form_with(model: @user, url: edit_approval_user_path(current_user.id), local: true, method: :patch) do |f| %>-->
 <%= form_with(model: @user, url: edit_approval_user_path(current_user.id), method: :patch) do |f| %>
   <div>
