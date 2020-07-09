@@ -8,7 +8,7 @@
     <div class="modal-body">
       <div class="row">
         <div class="col-md-10 col-md-offset-1">
-        <%= form_with model:@user, url: edit_attendance_reply_user_path(current_user.id), method: :patch do |f| %>
+        <%= form_with model:@user, url: edit_attendance_reply_user_path(current_user.id), method: :patch, local: true do |f| %>
           <% @e_attendance_users.each do |id, items| %>
             <% @u = User.find(id) %>
             <h4 class="text-center">【 <%= @u.name %> からの勤怠変更申請】</h4>

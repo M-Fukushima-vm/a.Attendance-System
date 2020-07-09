@@ -179,18 +179,18 @@
           <!--支持者確認㊞　表示-->
           <td>
             <% if day.overtime_approval == "承認" %>
-              残業承認済 
+              残：承認済　
             <% elsif day.overtime_approval == "否認" %>
-              残業否認 
+              残：否認　
             <% elsif day.overtime_approval == "申請中" %>
-              残業申請中
+              残：申請中　
             <% end %>
             <% if day.edit_approval == "承認" %>
-              勤怠編集承認済
+              編：承認済
             <% elsif day.edit_approval == "否認" %>
-              勤怠編集否認
+              編：否認
             <% elsif day.edit_approval == "申請中" %>
-              編集申請中
+              編：申請中
             <% end %>
           </td>
         </tr>

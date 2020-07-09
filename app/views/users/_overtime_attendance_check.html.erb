@@ -8,7 +8,7 @@
     <div class="modal-body">
       <div class="row">
         <div class="col-md-12 col-md-offset-0">
-        <%= form_with model:@user, url: overtime_attendance_reply_user_path(current_user.id), method: :patch do |f| %>
+        <%= form_with model:@user, url: overtime_attendance_reply_user_path(current_user.id), method: :patch, local: true do |f| %>
           <% @o_attendance_users.each do |id, items| %>
             <% @u = User.find(id) %>
             <!--%= debug params.inspect %>-->

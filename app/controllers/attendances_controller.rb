@@ -98,6 +98,7 @@ class AttendancesController < ApplicationController
         attendance.update_attributes(item)
       end
     end
+    flash[:success] = "編集申請を送信しました"
     redirect_to user_url(date: params[:date])
   end
 
@@ -144,7 +145,7 @@ class AttendancesController < ApplicationController
         attendance.t_started_at = ""
         attendance.t_finished_at = ""
         attendance.next_day = false
-        attendance.e_approval_superior = ""
+        # attendance.e_approval_superior = ""
         
         attendance.update_attributes(item)
         
@@ -159,7 +160,7 @@ class AttendancesController < ApplicationController
         attendance.t_started_at = ""
         attendance.t_finished_at = ""
         attendance.next_day = false
-        attendance.e_approval_superior = ""
+        # attendance.e_approval_superior = ""
         
         attendance.update_attributes(item)
       # else
@@ -211,53 +212,32 @@ class AttendancesController < ApplicationController
     # debugger
     overtime_attendance_reply_params.each do |id, item|
       attendance = Attendance.find(id)
-      if item[:must] == 0 #チェックボックスが未チェックの場合
+      if item[:must].to_i == 0 #チェックボックスが未チェックの場合
         next #スキップ
-      else
+      elsif item["overtime_approval"] == "申請中" && item[:must].to_i == 1
+        next #スキップ
+      elsif item["overtime_approval"] == "未申請" && item[:must].to_i == 1
         attendance.next_day = false
         attendance.o_approval_superior = ""
+        attendance.overtime = ""
+        attendance.sonohi_teiji = ""
+        attendance.update_attributes(item)
+      elsif item["overtime_approval"] == "承認" && item[:must].to_i == 1
+        attendance.next_day = false
+        attendance.o_approval_superior = ""
+        attendance.update_attributes(item)
+      elsif item["overtime_approval"] == "否認" && item[:must].to_i == 1
+        attendance.next_day = false
+        attendance.o_approval_superior = ""
+        attendance.overtime = ""
+        attendance.sonohi_teiji = ""
         attendance.update_attributes(item)
       end
     end
     flash[:success] = "変更確認チェックボックス☑の変更を送信しました"
     redirect_to user_url(date: params[:date])
   end
-      
-      
-      # if item[:e_approval_superior].present? && item[:next_day] == 0
-      #   attendance.update_attributes(item)
-      #   flash[:success] = "勤怠編集を申請しました"
-      #   redirect_to user_url(date: params[:date]) and return
-      # elsif item[:e_approval_superior].present? && item[:next_day] == 1
-      #   attendance.t_finished_at = item[t_finished_at(4i)] + 24
-      #   attendance.update_attributes(item)
-      #   flash[:success] = "勤怠編集を申請しました"
-      #   redirect_to user_url(date: params[:date]) and return
-      # else
-      #   flash[:danger] = "申請上長を選択して下さい" 
-      #   redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
-      # end
-    # end
-        # flash[:success] = "勤怠編集を申請しました"
-        # redirect_to user_url(date: params[:date]) and return
-    # else
-      # flash[:danger] = "申請上長を選択して下さい" 
-      # redirect_to user_url(date: params[:date]) and return
-    # end
-    
-    # if params[:user][:attendances][:e_approval_superior].present? && params[:user][:attendances][:next_day] == 1
-    #   edit_approval_params.each do |id, item|
-    #     attendance = Attendance.find(id)
-    #     attendance.t_finished_at = params[:user][:t_finished_at] + 24
-    #     attendance.update_attributes(item)
-    #   end
-    #     flash[:success] = "勤怠編集を申請しました"
-    #     redirect_to user_url(date: params[:date]) and return
-    # else
-    #   flash[:danger] = "申請上長を選択して下さい" 
-    #   redirect_to user_url(date: params[:date]) and return
-    # end
-  # end
+  
 
   private
   
