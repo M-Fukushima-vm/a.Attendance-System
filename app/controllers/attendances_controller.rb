@@ -75,31 +75,34 @@ class AttendancesController < ApplicationController
         attendance.update_attributes(item)
       end
     end
-    flash[:success] = "変更確認チェックボックス☑の変更を送信しました"
+    flash[:success] = "変更確認チェックボックス☑の状態変更を反映しました"
     redirect_to user_url(date: params[:date])
   end
   
   def edit_approval
-    edit_approval_params.each do |id, item|
-      attendance = Attendance.find(id)
-      item["t_started_at(1i)"] = attendance.worked_on.year.to_s
-      item["t_started_at(2i)"] = attendance.worked_on.month.to_s
-      item["t_started_at(3i)"] = attendance.worked_on.day.to_s
-      item["t_finished_at(1i)"] = attendance.worked_on.year.to_s
-      item["t_finished_at(2i)"] = attendance.worked_on.month.to_s
-      item["t_finished_at(3i)"] = attendance.worked_on.day.to_s
-      # debugger
-      if item[:e_approval_superior].present? && item[:next_day] == "true"
-        next_day = attendance.worked_on.day.to_i + 1
-        item["t_finished_at(3i)"] = next_day.to_s
-        attendance.update_attributes(item)
-      elsif item[:e_approval_superior].present? && item[:next_day] == "false"
-        # debugger
-        attendance.update_attributes(item)
-      end
-    end
-    flash[:success] = "編集申請を送信しました"
-    redirect_to user_url(date: params[:date])
+    edit_approval_valid? # 　⇨ attendances_helper
+    edit_approval_flash # 　⇨ attendances_helper
+    
+    # edit_approval_params.each do |id, item|
+    #   attendance = Attendance.find(id)
+    #   item["t_started_at(1i)"] = attendance.worked_on.year.to_s
+    #   item["t_started_at(2i)"] = attendance.worked_on.month.to_s
+    #   item["t_started_at(3i)"] = attendance.worked_on.day.to_s
+    #   item["t_finished_at(1i)"] = attendance.worked_on.year.to_s
+    #   item["t_finished_at(2i)"] = attendance.worked_on.month.to_s
+    #   item["t_finished_at(3i)"] = attendance.worked_on.day.to_s
+    #   # debugger
+    #   if item[:e_approval_superior].present? && item[:next_day] == "true"
+    #     next_day = attendance.worked_on.day.to_i + 1
+    #     item["t_finished_at(3i)"] = next_day.to_s
+    #     attendance.update_attributes(item)
+    #   elsif item[:e_approval_superior].present? && item[:next_day] == "false"
+    #     # debugger
+    #     attendance.update_attributes(item)
+    #   end
+    # end
+    # flash[:success] = "編集申請を送信しました"
+    # redirect_to user_url(date: params[:date])
   end
 
   def edit_attendance_reply
@@ -145,7 +148,7 @@ class AttendancesController < ApplicationController
         attendance.t_started_at = ""
         attendance.t_finished_at = ""
         attendance.next_day = false
-        # attendance.e_approval_superior = ""
+        attendance.e_approval_superior = ""
         
         attendance.update_attributes(item)
         
@@ -160,14 +163,14 @@ class AttendancesController < ApplicationController
         attendance.t_started_at = ""
         attendance.t_finished_at = ""
         attendance.next_day = false
-        # attendance.e_approval_superior = ""
+        attendance.e_approval_superior = ""
         
         attendance.update_attributes(item)
       # else
       #   attendance.update_attributes(item)
       end
     end
-    flash[:success] = "変更確認チェックボックス☑の変更を送信しました"
+    flash[:success] = "変更確認チェックボックス☑の状態変更を反映しました"
     redirect_to user_url(date: params[:date])
   end
   
@@ -234,7 +237,7 @@ class AttendancesController < ApplicationController
         attendance.update_attributes(item)
       end
     end
-    flash[:success] = "変更確認チェックボックス☑の変更を送信しました"
+    flash[:success] = "変更確認チェックボックス☑の状態変更を反映しました"
     redirect_to user_url(date: params[:date])
   end
   

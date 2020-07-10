@@ -29,27 +29,39 @@
               <% if (Date.current < day.worked_on) %>
                 <td>
                   <%= attendance.datetime_select :t_started_at, 
-                  {selected: attendance.object.t_started_at.present? ?
-                  attendance.object.t_started_at : attendance.object.started_at,
+                  {
+                    # selected: 
+                  # attendance.object.t_started_at.present? ?
+                  # attendance.object.t_started_at : 
+                  # attendance.object.started_at,
                   include_blank: true, discard_year: true, discard_month: true, discard_day: true, disabled: true}, {class: "form-control time-select"} %>
                 </td>
                 <td>
                   <%= attendance.datetime_select :t_finished_at,
-                  {selected: attendance.object.t_finished_at.present? ?
-                  attendance.object.t_finished_at : attendance.object.finished_at,
+                  {
+                    # selected: 
+                  # attendance.object.t_finished_at.present? ?
+                  # attendance.object.t_finished_at : 
+                  # attendance.object.finished_at,
                   include_blank: true, discard_year: true, discard_month: true, discard_day: true, disabled: true}, {class: "form-control time-select"} %>
                 </td>
               <% else %>
                 <td>
                   <%= attendance.datetime_select :t_started_at,
-                  {selected: attendance.object.t_started_at.present? ?
-                  attendance.object.t_started_at : attendance.object.started_at,
+                  {
+                    # selected: 
+                  # attendance.object.t_started_at.present? ?
+                  # attendance.object.t_started_at : 
+                  # attendance.object.started_at,
                   include_blank: true, discard_year: true, discard_month: true, discard_day: true}, {class: "form-control time-select"} %>
                 </td>
                 <td>
                   <%= attendance.datetime_select :t_finished_at,
-                  {selected: attendance.object.t_finished_at.present? ?
-                  attendance.object.t_finished_at : attendance.object.finished_at,
+                  {
+                    # selected: 
+                  # attendance.object.t_finished_at.present? ?
+                  # attendance.object.t_finished_at : 
+                  # attendance.object.finished_at,
                   include_blank: true, discard_year: true, discard_month: true, discard_day: true}, {class: "form-control time-select"} %>
                 </td>
               <% end %>

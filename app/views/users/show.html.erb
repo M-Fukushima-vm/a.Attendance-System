@@ -183,14 +183,16 @@
             <% elsif day.overtime_approval == "否認" %>
               残：否認　
             <% elsif day.overtime_approval == "申請中" %>
-              残：申請中　
+              <% @o_superior = User.find(day.o_approval_superior.to_i) %>
+              残：申請中（<%= @o_superior.name %>）
             <% end %>
             <% if day.edit_approval == "承認" %>
               編：承認済
             <% elsif day.edit_approval == "否認" %>
               編：否認
             <% elsif day.edit_approval == "申請中" %>
-              編：申請中
+              <% @e_superior = User.find(day.e_approval_superior.to_i) %>
+              編：申請中（<%= @e_superior.name %>）
             <% end %>
           </td>
         </tr>
@@ -221,7 +223,7 @@
           <small>所属長承認：<%= @one_month_apply_status %></small><br>
           <!--選択欄-->
           <% if logged_in? && current_user?(@user) %>
-            <%= form_with model:@user, url: month_approval_user_path(@user.id), method: :patch do |f| %>
+            <%= form_with model:@user, url: month_approval_user_path(@user.id), method: :patch, local: true do |f| %>
               <%= f.collection_select :approval_superior, @superior_user_array, :id, :name, :prompt => "申請上長を選択" %>
               <% @attendances.where(worked_on: @first_day).each do |day| %>
                 <%= fields_for "attendances[]", day do |af| %>
