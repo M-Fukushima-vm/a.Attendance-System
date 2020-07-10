@@ -78,8 +78,12 @@ module AttendancesHelper
       item["t_finished_at(1i)"] = attendance.worked_on.year.to_s
       item["t_finished_at(2i)"] = attendance.worked_on.month.to_s
       item["t_finished_at(3i)"] = attendance.worked_on.day.to_s
-      # shaped_params = []
-      # shaped_params << item
+      
+      if item[:next_day] == "true"
+        next_day = attendance.worked_on.day.to_i + 1
+        item["t_finished_at(3i)"] = next_day.to_s
+      end
+      
         hen_syu = "#{item["t_started_at(1i)"]}-#{item["t_started_at(2i)"]}-#{item["t_started_at(3i)"]} #{item["t_started_at(4i)"]}:#{item["t_started_at(5i)"]}"
         hen_tai = "#{item["t_finished_at(1i)"]}-#{item["t_finished_at(2i)"]}-#{item["t_finished_at(3i)"]} #{item["t_finished_at(4i)"]}:#{item["t_finished_at(5i)"]}"
       # debugger
@@ -131,14 +135,11 @@ module AttendancesHelper
         next
         
       end
-      
-      if item[:e_approval_superior].present? && item[:next_day] == "true" && 
+      if item[:e_approval_superior].present? && 
         (item["t_started_at(4i)"].present? && item["t_started_at(5i)"].present?) && 
         (item["t_finished_at(4i)"].present? && item["t_finished_at(5i)"].present?)
-        next_day = attendance.worked_on.day.to_i + 1
-        item["t_finished_at(3i)"] = next_day.to_s
         attendance.update_attributes(item)
-      elsif item[:e_approval_superior].present? && item[:next_day] == "false" && 
+      elsif item[:e_approval_superior].present? &&
         (item["t_started_at(4i)"].present? && item["t_started_at(5i)"].present?) && 
         (item["t_finished_at(4i)"].present? && item["t_finished_at(5i)"].present?)
         # debugger
