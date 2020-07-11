@@ -61,7 +61,7 @@
     <% end %>
     <div class="notice">
       <% if current_user?(@user) && current_user.superior? && @o_attendance.present? %>
-        <p>【残業変更申請のお知らせ】
+        <p>【残業申請のお知らせ】
           <%= link_to " #{@o_attendance_count}件の通知があります", overtime_attendance_check_user_path(@user), remote: true %>
         </p>
       <% end %>
@@ -125,6 +125,11 @@
             <% if logged_in? && current_user?(@user) %>
               <%= link_to "残業申請", attendances_overtime_apply_user_path(id: current_user.id, date: day.worked_on), remote: true, class: "btn btn-primary btn-sm" %>
             <% end %>
+            <!--% apply_user = User.find(day.user_id) %>-->
+            <!--% teiji = "#{day.worked_on.to_s} #{apply_user.designed_work_end_time.strftime('%H:%M:%S').to_s}" %>-->
+            <!--% if day.finished_at.present? && (day.finished_at.to_i > teiji.to_i) && (day.overtime_approval == "未申請" || day.overtime_approval == "否認") %>-->
+            <!--  ※-->
+            <!--% end %>-->
           </td>
           <!--日付　表示-->
           <td><%= l(day.worked_on, format: :short) %></td>
@@ -145,7 +150,13 @@
             <% end %>
           </td>
           <!--退社：時のみの表示-->
-          <td><%= l(day.finished_at.floor_to(15.minutes), format: :hour) if day.finished_at.present? %></td>
+          <td>
+            <% if day.finished_at.present? && day.finished_at.strftime("%Y-%m-%d").to_s != day.worked_on.to_s %>
+              翌 <%= l(day.finished_at.floor_to(15.minutes), format: :hour) %>
+            <% elsif day.finished_at.present? && day.finished_at.strftime("%Y-%m-%d").to_s == day.worked_on.to_s %>
+              <%= l(day.finished_at.floor_to(15.minutes), format: :hour) %>
+            <% end %>
+          </td>
           <!--退社：分のみの表示-->
           <td><%= l(day.finished_at.floor_to(15.minutes), format: :minute) if day.finished_at.present? %></td>
           <!--退社ボタン表示用スペース-->
@@ -154,6 +165,12 @@
               <%= link_to "　退社　", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-sm btn-attendance" %>
             <!--% if btn_text = attendance_state(day) %>-->
               <!--%= link_to "　#{btn_text}　", user_attendance_path(@user, day), method: :patch, class: "btn btn-gray btn-attendance" %>-->
+            <% end %>
+            <!--残業申請漏れマークアップ-->
+            <% apply_user = User.find(day.user_id) %>
+            <% teiji = "#{day.worked_on.to_s} #{apply_user.designed_work_end_time.strftime('%H:%M:%S').to_s}" %>
+            <% if day.finished_at.present? && (day.finished_at.to_i > teiji.to_i) && (day.overtime_approval == "未申請" || day.overtime_approval == "否認") %>
+              ※
             <% end %>
           </td>
           <!--在社時間　表示-->
@@ -166,13 +183,30 @@
           <!--備考　表示-->
           <td><%= day.note %></td>
           <!--終了予定時間：時のみの表示-->
-          <td><%= day.overtime.hour if day.overtime.present? %></td>
+          <td>
+            <% if day.overtime.present? && day.overtime_approval == "申請中" %>
+              <% if day.overtime.strftime("%Y-%m-%d").to_s != day.worked_on.to_s %>
+                翌 <%= day.overtime.strftime('%k') %>
+              <% elsif day.overtime.strftime("%Y-%m-%d").to_s == day.worked_on.to_s %>
+                <%= day.overtime.strftime('%k') %>
+              <% end %>
+            <% end %>
+          </td>
           <!--終了予定時間：分のみの表示-->
-          <td><%= day.overtime.min if day.overtime.present? %></td>
+          <td>
+            <% if day.overtime.present? && day.overtime_approval == "申請中" %>
+                <%= day.overtime.strftime('%M') %>
+            <% end %>
+          </td>
           <!--時間外時間　表示-->
           <td>
             <% zangyou = day.overtime.to_i - day.sonohi_teiji.to_i %>
-            <%= Time.at(zangyou).strftime('%-H：%M') if day.sonohi_teiji.present? %>
+            <% tokubetu = day.overtime.to_i - day.started_at.to_i %>
+            <% if (day.overtime.present? && day.sonohi_teiji.present?) && (day.sonohi_teiji.to_i > day.started_at.to_i) %>
+              <%= Time.at(zangyou).strftime('%-H：%M') if day.sonohi_teiji.present? %>
+            <% elsif (day.overtime.present? && day.sonohi_teiji.present?) && (day.sonohi_teiji.to_i < day.started_at.to_i) %>
+              <%= Time.at(tokubetu).strftime('%-H：%M') if day.sonohi_teiji.present? %>
+            <% end %>
           </td>
           <!--業務処理内容　表示-->
           <td><%= day.gyoumu_syori if day.gyoumu_syori.present? %></td>
@@ -184,7 +218,7 @@
               残：否認　
             <% elsif day.overtime_approval == "申請中" %>
               <% @o_superior = User.find(day.o_approval_superior.to_i) %>
-              残：申請中（<%= @o_superior.name %>）
+              残：申請中→<%= @o_superior.name %>　
             <% end %>
             <% if day.edit_approval == "承認" %>
               編：承認済
@@ -192,7 +226,7 @@
               編：否認
             <% elsif day.edit_approval == "申請中" %>
               <% @e_superior = User.find(day.e_approval_superior.to_i) %>
-              編：申請中（<%= @e_superior.name %>）
+              編：申請中→<%= @e_superior.name %>
             <% end %>
           </td>
         </tr>

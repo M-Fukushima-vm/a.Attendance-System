@@ -48,7 +48,12 @@
                   <%= $days_of_the_week[item.worked_on.wday] %>
                 </td>
                 <td>
-                  <%= l(item[:overtime], format: :time) if item[:overtime].present? %>
+                  <% if item[:overtime].present? && item[:overtime].strftime("%Y-%m-%d").to_s != item[:worked_on].to_s %>
+                    翌 <%= l(item[:overtime], format: :time) %>
+                  <% elsif item[:overtime].present? && item[:overtime].strftime("%Y-%m-%d").to_s == item[:worked_on].to_s %>
+                    <%= l(item[:overtime], format: :time) %>
+                    <!--%= l(item[:overtime], format: :time) if item[:overtime].present? %>-->
+                  <% end %>
                 </td>
                 <td>
                   <!--%= l(@u.designed_work_end_time, format: :time) %>-->

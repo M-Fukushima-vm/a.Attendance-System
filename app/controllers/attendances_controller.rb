@@ -288,11 +288,11 @@ class AttendancesController < ApplicationController
     end
     
     def overtime_approval_params
-      params.permit(attendance:[:id, :overtime, :next_day, :gyoumu_syori, :o_approval_superior, :overtime_approval, :sonohi_teiji])[:attendance]
+      params.permit(attendance:[:id, :worked_on, :overtime, :next_day, :gyoumu_syori, :o_approval_superior, :overtime_approval, :sonohi_teiji])[:attendance]
     end
     
     def overtime_attendance_reply_params
-      params.permit(attendances:[:overtime_approval, :must])[:attendances]
+      params.permit(attendances:[:worked_on, :overtime_approval, :must])[:attendances]
     end
 
 end

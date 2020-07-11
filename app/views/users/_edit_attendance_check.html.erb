@@ -62,28 +62,37 @@
                   <%= $days_of_the_week[item.worked_on.wday] %>
                 </td>
                 <td>
-                  <%= item[:started_at].hour if item[:started_at].present? %>
+                  <%= item[:started_at].strftime('%k') if item[:started_at].present? %>
                 </td>
                 <td>
-                  <%= item[:started_at].min if item[:started_at].present? %>
+                  <%= item[:started_at].strftime('%M') if item[:started_at].present? %>
                 </td>
                 <td>
-                  <%= item[:finished_at].hour if item[:finished_at].present? %>
+                  <% if item[:finished_at].present? && item[:finished_at].strftime("%Y-%m-%d").to_s != item[:worked_on].to_s %>
+                    翌 <%= item[:finished_at].strftime('%k') %>
+                  <% elsif item[:finished_at].present? && item[:finished_at].strftime("%Y-%m-%d").to_s == item[:worked_on].to_s %>
+                    <%= item[:finished_at].strftime('%k') %>
+                  <% end %>
                 </td>
                 <td>
-                  <%= item[:finished_at].min if item[:finished_at].present? %>
+                  <%= item[:finished_at].strftime('%M') if item[:finished_at].present? %>
                 </td>
                 <td>
-                  <%= item[:t_started_at].hour if item[:t_started_at].present? %>
+                  <%= item[:t_started_at].strftime('%k') if item[:t_started_at].present? %>
                 </td>
                 <td>
-                  <%= item[:t_started_at].min if item[:t_started_at].present? %>
+                  <%= item[:t_started_at].strftime('%M') if item[:t_started_at].present? %>
                 </td>
                 <td>
-                  <%= item[:t_finished_at].hour if item[:t_finished_at].present? %>
+                  <% if item[:t_finished_at].present? && item[:t_finished_at].strftime("%Y-%m-%d").to_s != item[:worked_on].to_s %>
+                    翌 <%= item[:t_finished_at].strftime('%k') %>
+                  <% elsif item[:t_finished_at].present? && item[:t_finished_at].strftime("%Y-%m-%d").to_s == item[:worked_on].to_s %>
+                    <%= item[:t_finished_at].strftime('%k')  %>
+                  <% end %>
+                  <!--%= item[:t_finished_at].strftime('%k') if item[:t_finished_at].present? %>-->
                 </td>
                 <td>
-                  <%= item[:t_finished_at].min if item[:t_finished_at].present? %>
+                  <%= item[:t_finished_at].strftime('%M') if item[:t_finished_at].present? %>
                 </td>
                 
                 <td><%= item.note %></td>
