@@ -9,7 +9,7 @@
 
 # coding: utf-8
 
-User.create!(name: "事業所責任者様",
+User.create!(name: "事業所長様",
              email: "sample@email.com",
              password: "password",
              password_confirmation: "password",
