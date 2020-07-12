@@ -32,6 +32,7 @@ class AttendancesController < ApplicationController
 
   def edit_one_month
     superior_user_array
+    a_superior_user_array
   end
 
   def update_one_month
@@ -176,6 +177,7 @@ class AttendancesController < ApplicationController
   
   def overtime_apply
     superior_user_array
+    a_superior_user_array
     @attendance = Attendance.find_by(user_id: params[:id], worked_on: params[:date])
   end
   
@@ -288,7 +290,7 @@ class AttendancesController < ApplicationController
     end
     
     def overtime_approval_params
-      params.permit(attendance:[:id, :worked_on, :overtime, :next_day, :gyoumu_syori, :o_approval_superior, :overtime_approval, :sonohi_teiji])[:attendance]
+      params.permit(attendance:[:id, :worked_on, :started_at, :overtime, :next_day, :gyoumu_syori, :o_approval_superior, :overtime_approval, :sonohi_teiji])[:attendance]
     end
     
     def overtime_attendance_reply_params

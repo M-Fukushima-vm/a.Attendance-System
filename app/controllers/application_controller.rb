@@ -56,12 +56,21 @@ class ApplicationController < ActionController::Base
   end
   
   def superior_user_array #上長（申請先）選択
-      @superior_user_array = [] #上長ユーザーの配列作成
-      @superior_user = User.where(superior: true) #
-      @superior_user = @superior_user.reject{|u| u == current_user} #上長のセルフ1ヶ月申請防止
-        if User.where(superior: true).present?
-          @superior_user_array = @superior_user
-        end
+    @superior_user_array = [] #上長ユーザーの配列作成
+    @superior_user = User.where(superior: true) #
+    @superior_user = @superior_user.reject{|u| u == current_user} #上長のセルフ1ヶ月申請防止
+      if User.where(superior: true).present?
+        @superior_user_array = @superior_user
+      end
+  end
+  
+  def a_superior_user_array #上長（申請先）選択
+    @a_superior_user_array = [] #上長ユーザーの配列作成
+    @a_superior_user = User.where(admin: true) #
+    @a_superior_user = @a_superior_user.reject{|u| u == current_user} #上長のセルフ1ヶ月申請防止
+      if User.where(admin: true).present?
+        @a_superior_user_array = @a_superior_user
+      end
   end
   
   # # ページ出力前に1ヶ月分のログレコードの存在を確認・セットします。

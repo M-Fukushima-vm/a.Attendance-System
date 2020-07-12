@@ -60,8 +60,23 @@
                   <%= l(item[:sonohi_teiji], format: :time) if item[:sonohi_teiji].present? %>
                 </td>
                 <td>
-                  <% zangyou = item[:overtime] - item[:sonohi_teiji] %>
-                  <%= Time.at(zangyou).strftime('%-H：%M') if item[:sonohi_teiji].present? %>
+                    <% zangyou = item[:overtime] - item[:sonohi_teiji] %>
+                      <% z_s = zangyou % 60 %>
+                      <% z_m = ((zangyou - z_s) / 60) % 60 %>
+                      <!--% z_h = ((zangyou - z_s - z_m * 60) / (60 ** 2)) % 24 %>-->
+                      <% z_h = ((zangyou - z_s - z_m) / (60 ** 2)) %>
+                    <% tokubetu = item[:overtime] - item[:started_at] if item[:started_at].present? %>
+                      <% t_s = tokubetu % 60 if item[:started_at].present? %>
+                      <% t_m = ((tokubetu - t_s) / 60) % 60 if item[:started_at].present? %>
+                      <!--% z_h = ((zangyou - z_s - z_m * 60) / (60 ** 2)) % 24 %>-->
+                      <% t_h = ((tokubetu - t_s - t_m) / (60 ** 2)) if item[:started_at].present? %>
+                      
+                  <% if (item[:overtime].present? && item[:sonohi_teiji].present?) && (item[:sonohi_teiji].to_i > item[:started_at].to_i) %>
+                    <%= "#{z_h.to_i}：" + Time.at(z_m).strftime('%M') if item[:sonohi_teiji].present? %>
+                  <% elsif (item[:overtime].present? && item[:sonohi_teiji].present?) && (item[:sonohi_teiji].to_i < item[:started_at].to_i) %>
+                    <%= "#{z_h.to_i}：" + Time.at(t_m).strftime('%M') if item[:sonohi_teiji].present? %>
+                  <% end %>
+                  <!--%= Time.at(zangyou).strftime('%-H：%M') if item[:sonohi_teiji].present? %>-->
                 </td>
                 <td>
                   <%= item[:gyoumu_syori] if item[:gyoumu_syori].present? %>

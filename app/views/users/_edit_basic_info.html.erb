@@ -15,26 +15,26 @@
           <%= form_with(model: @user, url: update_basic_info_user_path(@user), local: true, method: :patch) do |f| %>
             <%= render 'shared/error_messages', object: @user %>
 
-            <%= f.label :name, class: "label-#{yield(:class_text)}" %>
-            <p><%= @user.name %></p>
+            <!--%= f.label :name, class: "label-#{yield(:class_text)}" %>-->
+            <!--<p>%= @user.name %></p>-->
 
-            <%= f.label :department, class: "label-#{yield(:class_text)}" %>
-            <%= f.text_field :department, class: "form-control" %>
+            <!--%= f.label :department, class: "label-#{yield(:class_text)}" %>-->
+            <!--%= f.text_field :department, class: "form-control" %>-->
 
-            <%= f.label :designed_work_start_time, class: "label-#{yield(:class_text)}" %>
-            <%= f.time_field :designed_work_start_time, class: "form-control" %>
+            <!--%= f.label :designed_work_start_time, class: "label-#{yield(:class_text)}" %>-->
+            <!--%= f.time_field :designed_work_start_time, class: "form-control" %>-->
 
-            <%= f.label :designed_work_end_time, class: "label-#{yield(:class_text)}" %>
-            <%= f.time_field :designed_work_end_time, class: "form-control" %>
+            <!--%= f.label :designed_work_end_time, class: "label-#{yield(:class_text)}" %>-->
+            <!--%= f.time_field :designed_work_end_time, class: "form-control" %>-->
 
-            <%= f.label :basic_work_time, class: "label-#{yield(:class_text)}" %>
-            <%= f.time_field :basic_work_time, class: "form-control" %>
+            <!--%= f.label :basic_work_time, class: "label-#{yield(:class_text)}" %>-->
+            <!--%= f.time_field :basic_work_time, class: "form-control" %>-->
 
             <div class="center">
-              <%= f.submit yield(:button_text), class: "btn btn-primary btn-#{yield(:class_text)}" %>
-              <button type="button" class="btn btn-default btn-<%= yield(:class_text) %>" data-dismiss="modal">
-                キャンセル
-              </button>
+              <!--%= f.submit yield(:button_text), class: "btn btn-primary btn-#{yield(:class_text)}" %>-->
+              <!--<button type="button" class="btn btn-default btn-%= yield(:class_text) %>" data-dismiss="modal">-->
+              <!--  キャンセル-->
+              <!--</button>-->
             </div>
           <% end %>
         </div>

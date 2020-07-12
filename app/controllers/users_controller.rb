@@ -3,16 +3,17 @@ class UsersController < ApplicationController
   include SessionsHelper
   
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info] # paramsハッシュからユーザーを取得
-  before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info] # ユーザーにログインを要求
+  before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info] # ユーザーにログインを要求
   before_action :correct_user, only: [:edit, :update] # ユーザー自身のみが情報を編集・更新できる
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info] # システム管理権限所有かどうか判定
   before_action :set_one_month, only: :show
   before_action :notification_display, only: :show # お知らせの通知
-  # before_action :set_one_month_log, only: :show
+  # before_action :user_class, only: :show
   
   def index
     if current_user.admin?
-      @users = query.paginate(page: params[:page])
+      # @users = query.paginate(page: params[:page])
+      @users = query.where.not(id: current_user.id).paginate(page: params[:page])
       store_location # index_update の redirect先一時保存【paginate対策】
     else
       flash[:danger] = '権限がありません。'
@@ -50,7 +51,7 @@ class UsersController < ApplicationController
   end
   
   def show
-    if current_user?(@user) || current_user.admin? || current_user.superior?
+    if current_user?(@user) || current_user.admin? || current_user.superior? && !@user.admin?
       @worked_sum = @attendances.where.not(started_at: nil).count
     else
       flash[:danger] = '権限がありません。'
@@ -58,6 +59,8 @@ class UsersController < ApplicationController
     end
     
     superior_user_array #  application.controller ##↓↓↓　private ↓↓↓
+    
+    a_superior_user_array #  application.controller 
     
     one_month_apply_status # ↓↓↓　private ↓↓↓
       
@@ -228,4 +231,22 @@ class UsersController < ApplicationController
       
     end
 
+    # def approved_user?(user)
+    #   if user.admin? || (user == @user)
+    #     # next
+    #   elsif user.superior? && !@user.admin?
+    #     # next
+    #   # elsif logged_in?
+    #     # next
+    #   end
+    # end
+    
+    # def user_class
+    #   # if logged_in?
+    #     redirect_to user_url(current_user) unless approved_user?(current_user)
+    #   # else
+    #   #   redirect_to root_url unless approved_user?(current_user)
+    #   # end
+    # end
+    
 end

@@ -200,12 +200,21 @@
           </td>
           <!--時間外時間　表示-->
           <td>
-            <% zangyou = day.overtime.to_i - day.sonohi_teiji.to_i %>
-            <% tokubetu = day.overtime.to_i - day.started_at.to_i %>
+              <% zangyou = day.overtime.to_i - day.sonohi_teiji.to_i %>
+                <% z_s = zangyou % 60 %>
+                <% z_m = ((zangyou - z_s) / 60) % 60 %>
+                <!--% z_h = ((zangyou - z_s - z_m * 60) / (60 ** 2)) % 24 %>-->
+                <% z_h = ((zangyou - z_s - z_m) / (60 ** 2)) %>
+              <% tokubetu = day.overtime.to_i - day.started_at.to_i if day.started_at.present? %>
+                <% t_s = tokubetu % 60 if day.started_at.present?%>
+                <% t_m = ((tokubetu - t_s) / 60) % 60 if day.started_at.present?%>
+                <!--% z_h = ((zangyou - z_s - z_m * 60) / (60 ** 2)) % 24 %>-->
+                <% t_h = ((tokubetu - t_s - t_m) / (60 ** 2)) if day.started_at.present?%>
+            
             <% if (day.overtime.present? && day.sonohi_teiji.present?) && (day.sonohi_teiji.to_i > day.started_at.to_i) %>
-              <%= Time.at(zangyou).strftime('%-H：%M') if day.sonohi_teiji.present? %>
+              <%= "#{z_h.to_i}：" + Time.at(z_m).strftime('%M') if day.sonohi_teiji.present? %>
             <% elsif (day.overtime.present? && day.sonohi_teiji.present?) && (day.sonohi_teiji.to_i < day.started_at.to_i) %>
-              <%= Time.at(tokubetu).strftime('%-H：%M') if day.sonohi_teiji.present? %>
+              <%= "#{z_h.to_i}：" + Time.at(t_m).strftime('%M') if day.sonohi_teiji.present? %>
             <% end %>
           </td>
           <!--業務処理内容　表示-->
@@ -258,7 +267,11 @@
           <!--選択欄-->
           <% if logged_in? && current_user?(@user) %>
             <%= form_with model:@user, url: month_approval_user_path(@user.id), method: :patch, local: true do |f| %>
-              <%= f.collection_select :approval_superior, @superior_user_array, :id, :name, :prompt => "申請上長を選択" %>
+              <% if current_user.admin? %>
+                <%= f.collection_select :approval_superior, @a_superior_user_array, :id, :name, :prompt => "申請上長を選択" %>
+              <% else %>
+                <%= f.collection_select :approval_superior, @superior_user_array, :id, :name, :prompt => "申請上長を選択" %>
+              <% end %>
               <% @attendances.where(worked_on: @first_day).each do |day| %>
                 <%= fields_for "attendances[]", day do |af| %>
                   <%= af.hidden_field :month_approval, value: "申請中" %>

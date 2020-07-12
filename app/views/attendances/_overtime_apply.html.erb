@@ -55,7 +55,11 @@
                     <%= f.text_field :gyoumu_syori, class: "form-control" %>
                   </td>
                   <td>
-                    <%= f.collection_select :o_approval_superior, @superior_user_array, :id, :name, :prompt => "申請上長を選択" %>
+                    <% if current_user.admin? %>
+                      <%= f.collection_select :o_approval_superior, @a_superior_user_array, :id, :name, :prompt => "申請上長を選択" %>
+                    <% else %>
+                      <%= f.collection_select :o_approval_superior, @superior_user_array, :id, :name, :prompt => "申請上長を選択" %>
+                    <% end %>
                   </td>
                   <% if @attendance.o_approval_superior.blank? %>
                     <%= f.hidden_field :overtime_approval, value: "申請中" %>
