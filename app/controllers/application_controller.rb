@@ -57,7 +57,7 @@ class ApplicationController < ActionController::Base
   
   def superior_user_array #上長（申請先）選択
     @superior_user_array = [] #上長ユーザーの配列作成
-    @superior_user = User.where(superior: true) #
+    @superior_user = User.where(superior: true, admin: false) #
     @superior_user = @superior_user.reject{|u| u == current_user} #上長のセルフ1ヶ月申請防止
       if User.where(superior: true).present?
         @superior_user_array = @superior_user

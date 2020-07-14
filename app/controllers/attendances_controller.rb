@@ -31,8 +31,13 @@ class AttendancesController < ApplicationController
   end
 
   def edit_one_month
-    superior_user_array
-    a_superior_user_array
+    if current_user?(@user)
+      superior_user_array
+      a_superior_user_array
+    else
+      flash[:danger] = '権限がありません。'
+      redirect_to user_url(current_user.id)
+    end
   end
 
   def update_one_month

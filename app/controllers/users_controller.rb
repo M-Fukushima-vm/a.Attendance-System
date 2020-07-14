@@ -13,11 +13,12 @@ class UsersController < ApplicationController
   def index
     if current_user.admin?
       # @users = query.paginate(page: params[:page])
-      @users = query.where.not(id: current_user.id).paginate(page: params[:page])
+      @users = query.where.not(id: current_user.id).order(:id).paginate(page: params[:page])
       store_location # index_update の redirect先一時保存【paginate対策】
     else
-      flash[:danger] = '権限がありません。'
-      redirect_to root_url
+      # flash[:danger] = '権限がありません。'
+      # redirect_to root_url
+      redirect_to user_url(current_user.id)
     end
     
     # パラメータとして名前のキーワードを受け取っている場合は絞って検索する
@@ -51,7 +52,8 @@ class UsersController < ApplicationController
   end
   
   def show
-    if current_user?(@user) || current_user.admin? || current_user.superior? && !@user.admin?
+    # if current_user?(@user) || current_user.admin? || current_user.superior? && !@user.admin?
+    if current_user?(@user) || (current_user.superior? && !@user.admin?)
       @worked_sum = @attendances.where.not(started_at: nil).count
     else
       flash[:danger] = '権限がありません。'
@@ -106,6 +108,12 @@ class UsersController < ApplicationController
   end
   
   def edit_basic_info
+    if current_user?(@user)
+
+    else
+      flash[:danger] = '権限がありません。'
+      redirect_to user_url(current_user.id)
+    end
   end
   
   def update_basic_info
