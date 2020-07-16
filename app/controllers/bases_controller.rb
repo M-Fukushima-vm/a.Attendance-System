@@ -1,7 +1,7 @@
 class BasesController < ApplicationController
 
   def index
-    @bases = Base.all
+    @bases = Base.all.order(:number)
   end
 
   def create
@@ -10,8 +10,10 @@ class BasesController < ApplicationController
       flash[:success] = '拠点情報を追加しました。'
       redirect_to bases_url
     else
-      flash[:danger] = "無効な入力データがあった為、拠点情報追加をキャンセルしました。"
+      # flash[:danger] = "無効な入力データがあった為、拠点情報追加をキャンセルしました。"
+      flash[:danger] = "#{@base.name}の追加は失敗しました。<br>" + @base.errors.full_messages.join("<br>")
       redirect_to bases_url
+      
     end
   end
 
@@ -21,7 +23,8 @@ class BasesController < ApplicationController
       flash[:success] = "拠点情報を修正しました。"
       redirect_to bases_url
     else
-      flash[:danger] = "無効な入力データがあった為、拠点情報編集をキャンセルしました。"
+      # flash[:danger] = "無効な入力データがあった為、拠点情報編集をキャンセルしました。"
+      flash[:danger] = "#{@base.name}の更新は失敗しました。<br>" + @base.errors.full_messages.join("<br>")
       redirect_to bases_url  
     end
   end

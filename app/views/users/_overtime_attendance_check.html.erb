@@ -49,23 +49,23 @@
                 </td>
                 <td>
                   <% if item[:overtime].present? && item[:overtime].strftime("%Y-%m-%d").to_s != item[:worked_on].to_s %>
-                    翌 <%= l(item[:overtime], format: :time) %>
+                    翌 <%= l(item[:overtime].floor_to(15.minutes), format: :time) %>
                   <% elsif item[:overtime].present? && item[:overtime].strftime("%Y-%m-%d").to_s == item[:worked_on].to_s %>
-                    <%= l(item[:overtime], format: :time) %>
+                    <%= l(item[:overtime].floor_to(15.minutes), format: :time) %>
                     <!--%= l(item[:overtime], format: :time) if item[:overtime].present? %>-->
                   <% end %>
                 </td>
                 <td>
                   <!--%= l(@u.designed_work_end_time, format: :time) %>-->
-                  <%= l(item[:sonohi_teiji], format: :time) if item[:sonohi_teiji].present? %>
+                  <%= l(item[:sonohi_teiji].floor_to(15.minutes), format: :time) if item[:sonohi_teiji].present? %>
                 </td>
                 <td>
-                    <% zangyou = item[:overtime] - item[:sonohi_teiji] %>
+                    <% zangyou = item[:overtime].floor_to(15.minutes) - item[:sonohi_teiji].floor_to(15.minutes) %>
                       <% z_s = zangyou % 60 %>
                       <% z_m = ((zangyou - z_s) / 60) % 60 %>
                       <!--% z_h = ((zangyou - z_s - z_m * 60) / (60 ** 2)) % 24 %>-->
                       <% z_h = ((zangyou - z_s - z_m) / (60 ** 2)) %>
-                    <% tokubetu = item[:overtime] - item[:started_at] if item[:started_at].present? %>
+                    <% tokubetu = item[:overtime].floor_to(15.minutes) - item[:started_at].floor_to(15.minutes) if item[:started_at].present? %>
                       <% t_s = tokubetu % 60 if item[:started_at].present? %>
                       <% t_m = ((tokubetu - t_s) / 60) % 60 if item[:started_at].present? %>
                       <!--% z_h = ((zangyou - z_s - z_m * 60) / (60 ** 2)) % 24 %>-->

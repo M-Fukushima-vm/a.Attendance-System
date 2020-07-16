@@ -23,13 +23,13 @@
   <%= f.password_field :password, value: user.password, class: "form-control" %>
   
   <%= f.label :designed_work_start_time, "指定勤務開始時間", class: "label-#{yield(:class_text)}" %>
-  <%= f.time_field :designed_work_start_time, value: user.designed_work_start_time, class: "form-control" %>
+  <%= f.time_field :designed_work_start_time, selected: user.designed_work_start_time, class: "form-control" %>
   
   <%= f.label :designed_work_end_time, "指定勤務終了時間", class: "label-#{yield(:class_text)}" %>
-  <%= f.time_field :designed_work_end_time, value: user.designed_work_end_time, class: "form-control" %>
+  <%= f.time_field :designed_work_end_time, selected: user.designed_work_end_time, class: "form-control" %>
   
   <%= f.label :basic_work_time, "基本時間", class: "label-#{yield(:class_text)}" %>
-  <%= f.time_field :basic_work_time, value: user.basic_work_time, class: "form-control" %>
+  <%= f.time_field :basic_work_time, selected: user.basic_work_time, class: "form-control" %>
 
   <%= f.submit "編集する", class: "btn btn-primary btn-block btn-#{yield(:class_text)}" %>
 <% end %>

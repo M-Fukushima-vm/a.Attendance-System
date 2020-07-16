@@ -14,10 +14,10 @@
         </td>
         <td>
           <!--指定勤務時間：%= format_basic_info(@user.work_time) %><br>-->
-          指定勤務開始時間：<%= format_basic_info(@user.designed_work_start_time) %><br>
-          指定勤務終了時間：<%= format_basic_info(@user.designed_work_end_time) %>
+          指定勤務開始時間：<%= format_basic_info(@user.designed_work_start_time) if @user.designed_work_start_time.present? %><br>
+          指定勤務終了時間：<%= format_basic_info(@user.designed_work_end_time) if @user.designed_work_end_time.present? %>
         </td>
-        <td colspan="3">基本時間：<%= format_basic_info(@user.basic_work_time) %></td>
+        <td colspan="3">基本時間：<%= format_basic_info(@user.basic_work_time) if @user.basic_work_time.present? %></td>
         <td>初日：<%= l(@first_day, format: :short) %></td>
       </tr>
   
@@ -169,7 +169,7 @@
               <% end %>
               <!--残業申請漏れマークアップ-->
               <% apply_user = User.find(day.user_id) %>
-              <% teiji = "#{day.worked_on.to_s} #{apply_user.designed_work_end_time.strftime('%H:%M:%S').to_s}" %>
+              <% teiji = "#{day.worked_on.to_s} #{apply_user.designed_work_end_time.strftime('%H:%M:%S').to_s}" if apply_user.designed_work_end_time.present? %>
               <% if day.finished_at.present? && (day.finished_at.to_i > teiji.to_i) && (day.overtime_approval == "未申請" || day.overtime_approval == "否認") %>
                 ※
               <% end %>
@@ -196,7 +196,7 @@
             <!--終了予定時間：分のみの表示-->
             <td>
               <% if day.overtime.present? && day.overtime_approval == "申請中" %>
-                  <%= day.overtime.strftime('%M') %>
+                  <%= day.overtime.floor_to(15.minutes).strftime('%M') %>
               <% end %>
             </td>
             <!--時間外時間　表示-->
@@ -213,9 +213,9 @@
                   <% t_h = ((tokubetu - t_s - t_m) / (60 ** 2)) if day.started_at.present?%>
               
               <% if (day.overtime.present? && day.sonohi_teiji.present?) && (day.sonohi_teiji.to_i > day.started_at.to_i) %>
-                <%= "#{z_h.to_i}：" + Time.at(z_m).strftime('%M') if day.sonohi_teiji.present? %>
+                <%= "#{z_h.to_i}：" + Time.at(z_m).floor_to(15.minutes).strftime('%M') if day.sonohi_teiji.present? %>
               <% elsif (day.overtime.present? && day.sonohi_teiji.present?) && (day.sonohi_teiji.to_i < day.started_at.to_i) %>
-                <%= "#{z_h.to_i}：" + Time.at(t_m).strftime('%M') if day.sonohi_teiji.present? %>
+                <%= "#{z_h.to_i}：" + Time.at(t_m).floor_to(15.minutes).strftime('%M') if day.sonohi_teiji.present? %>
               <% end %>
             </td>
             <!--業務処理内容　表示-->
@@ -257,7 +257,7 @@
         <tr>
           <td><br><br><br></td>
           <!--総合勤務時間（指定勤務時間*出勤日数）　表示-->
-          <td colspan="2"><%= format_basic_info(@user.work_time).to_f * @worked_sum %></td>
+          <td colspan="2"><%= format_basic_info(@user.basic_work_time).to_f * @worked_sum %></td>
           <td colspan="6"></td>
           <!--累計在社時間　表示-->
           <td colspan="1"><%= format("%.2f", @total_working_times.to_f) %></td>

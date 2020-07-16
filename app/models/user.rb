@@ -18,6 +18,12 @@ class User < ApplicationRecord
   
   validates :work_time, presence: true
   
+  validates :basic_work_time, presence: true
+  
+  validates :designed_work_start_time, presence: true
+  
+  validates :designed_work_end_time, presence: true
+  
   # validates_acceptance_of :must, allow_nil: false, message: "チェックボックスをオン☑にしてください︎" #1ヶ月承認モーダル
   
   has_secure_password

@@ -1,7 +1,7 @@
 <%= form_with(scope: :base, url: bases_path, local: true, method: :post) do |f| %>
-
-  <!--%= f.label :number, "拠点番号", class: "label-#{yield(:class_text)}" %>-->
-  <!--%= f.text_field :number, class: "form-control" %>-->
+  <!--%= render 'error_messages_c' %>-->
+  <%= f.label :number, "拠点番号", class: "label-#{yield(:class_text)}" %>
+  <%= f.text_field :number, class: "form-control" %>
 
   <%= f.label :name, "拠点名", class: "label-#{yield(:class_text)}" %>
   <%= f.text_field :name, class: "form-control" %>
