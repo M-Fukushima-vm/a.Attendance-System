@@ -39,7 +39,7 @@
       <div class="notice">
         <% if current_user?(@user) && current_user.superior? && @one_month.present? %>
           <p>【所属長承認申請のお知らせ】
-            <%= link_to " #{@one_month_count}件の通知があります", one_month_check_user_path(@user), remote: true, class: "btn btn-outline-danger" %>
+            <%= link_to " #{@one_month_count}件の通知があります", one_month_check_user_path(id: @user), remote: true %>
           </p>
         <% end %>
       </div>
@@ -51,7 +51,7 @@
       <div class="notice">
         <% if current_user?(@user) && current_user.superior? && @e_attendance.present? %>
           <p>【勤怠変更申請のお知らせ】
-            <%= link_to " #{@e_attendance_count}件の通知があります", edit_attendance_check_user_path(@user), remote: true, class: "btn btn-outline-danger" %>
+            <%= link_to " #{@e_attendance_count}件の通知があります", edit_attendance_check_user_path(id: @user), remote: true %>
           </p>
         <% end %>
       </div>
@@ -63,7 +63,7 @@
       <div class="notice">
         <% if current_user?(@user) && current_user.superior? && @o_attendance.present? %>
           <p>【残業申請のお知らせ】
-            <%= link_to " #{@o_attendance_count}件の通知があります", overtime_attendance_check_user_path(@user), remote: true, class: "btn btn-outline-danger" %>
+            <%= link_to " #{@o_attendance_count}件の通知があります", overtime_attendance_check_user_path(id: @user), remote: true %>
           </p>
         <% end %>
       </div>
