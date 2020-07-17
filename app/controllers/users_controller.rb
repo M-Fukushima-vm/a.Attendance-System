@@ -130,25 +130,28 @@ class UsersController < ApplicationController
   def one_month_check
     # #"申請中：１"かつ申請先がcurrent_user の レコード全て
     @one_month = Attendance.where(month_approval: 1).where(approval_superior: current_user.id)
-    # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
-    @one_month_sort = @one_month.order(nil).group(:user_id, :apply_month)
-    @one_month_users = @one_month_sort.order(nil).group_by{|u| u.user_id}
+    # # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
+    # @one_month_sort = @one_month.order(nil).group(:user_id, :apply_month)
+    # @one_month_users = @one_month_sort.order(nil).group_by{|u| u.user_id}
+    @one_month_users = @one_month.group_by{|u| u.user_id}
   end
   
   def edit_attendance_check
     # #"申請中：１"かつ申請先がcurrent_user の レコード全て
     @e_attendance = Attendance.where(edit_approval: 1).where(e_approval_superior: current_user.id)
-    # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
-    @e_attendance_sort = @e_attendance.order(nil).group(:user_id, :worked_on)
-    @e_attendance_users = @e_attendance_sort.order(nil).group_by{|u| u.user_id}
+    # # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
+    # @e_attendance_sort = @e_attendance.order(nil).group(:user_id, :worked_on)
+    # @e_attendance_users = @e_attendance_sort.order(nil).group_by{|u| u.user_id}
+    @e_attendance_users = @e_attendance.group_by{|u| u.user_id}
   end
   
   def overtime_attendance_check
     # #"申請中：１"かつ申請先がcurrent_user の レコード全て
     @o_attendance = Attendance.where(overtime_approval: 1).where(o_approval_superior: current_user.id)
-    # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
-    @o_attendance_sort = @o_attendance.order(nil).group(:user_id, :worked_on)
-    @o_attendance_users = @o_attendance_sort.order(nil).group_by{|u| u.user_id}
+    # # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
+    # @o_attendance_sort = @o_attendance.order(nil).group(:user_id, :worked_on)
+    # @o_attendance_users = @o_attendance_sort.order(nil).group_by{|u| u.user_id}
+    @o_attendance_users = @o_attendance.group_by{|u| u.user_id}
   end
   
   
