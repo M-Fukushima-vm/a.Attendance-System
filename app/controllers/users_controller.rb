@@ -132,7 +132,7 @@ class UsersController < ApplicationController
     @one_month = Attendance.where(month_approval: 1).where(approval_superior: current_user.id)
     # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
     @one_month_sort = @one_month.group(:user_id, :apply_month)
-    @one_month_users = @one_month_sort.group_by{|u| u.user_id}.order(nil)
+    @one_month_users = @one_month_sort.order(nil).group_by{|u| u.user_id}
   end
   
   def edit_attendance_check
@@ -140,7 +140,7 @@ class UsersController < ApplicationController
     @e_attendance = Attendance.where(edit_approval: 1).where(e_approval_superior: current_user.id)
     # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
     @e_attendance_sort = @e_attendance.group(:user_id, :worked_on)
-    @e_attendance_users = @e_attendance_sort.group_by{|u| u.user_id}.order(nil)
+    @e_attendance_users = @e_attendance_sort.order(nil).group_by{|u| u.user_id}
   end
   
   def overtime_attendance_check
@@ -148,7 +148,7 @@ class UsersController < ApplicationController
     @o_attendance = Attendance.where(overtime_approval: 1).where(o_approval_superior: current_user.id)
     # 絞り込んだレコード群から「:user_id, :apply_month　の組み合わせの代表一つ」を選出
     @o_attendance_sort = @o_attendance.group(:user_id, :worked_on)
-    @o_attendance_users = @o_attendance_sort.group_by{|u| u.user_id}.order(nil)
+    @o_attendance_users = @o_attendance_sort.order(nil).group_by{|u| u.user_id}
   end
   
   
