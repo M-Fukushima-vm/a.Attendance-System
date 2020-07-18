@@ -1,7 +1,12 @@
 class BasesController < ApplicationController
 
   def index
-    @bases = Base.all.order(:number)
+    if current_user.admin?
+      @bases = Base.all.order(:number)
+    else
+      flash[:danger] = '権限がありません。'
+      redirect_to user_url(current_user.id)
+    end
   end
 
   def create

@@ -228,6 +228,7 @@ class AttendancesController < ApplicationController
         next #スキップ
       elsif item["overtime_approval"] == "未申請" && item[:must].to_i == 1
         attendance.next_day = false
+        attendance.gyoumu_syori = ""
         attendance.o_approval_superior = ""
         attendance.overtime = ""
         attendance.sonohi_teiji = ""
